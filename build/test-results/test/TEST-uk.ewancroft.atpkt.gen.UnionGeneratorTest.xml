@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="uk.ewancroft.atpkt.gen.UnionGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T21:17:35.138Z" hostname="macmini" time="0.011">
+<testsuite name="uk.ewancroft.atpkt.gen.UnionGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T21:21:27.907Z" hostname="macmini" time="0.01">
   <properties/>
-  <testcase name="test generate union type()" classname="uk.ewancroft.atpkt.gen.UnionGeneratorTest" time="0.011"/>
+  <testcase name="test generate union type()" classname="uk.ewancroft.atpkt.gen.UnionGeneratorTest" time="0.01"/>
   <system-out><![CDATA[package uk.ewancroft.atpkt.generated
 
 import kotlinx.serialization.Serializable
