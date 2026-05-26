@@ -4,14 +4,26 @@ import uk.ewancroft.atpkt.core.AtProtoClient
 import uk.ewancroft.atpkt.core.AtProtoSessionManager
 import uk.ewancroft.atpkt.client.ComAtProtoNS
 import uk.ewancroft.atpkt.client.AppBskyNS
+import uk.ewancroft.atpkt.did.DidResolver
 
 /**
  * The central agent class for AT Protocol interactions.
  * Inspired by the official TypeScript SDK's Agent architecture.
  */
 class Agent(
-    val sessionManager: AtProtoSessionManager
+    val sessionManager: AtProtoSessionManager,
+    val didResolver: DidResolver = DidResolver()
 ) {
     val com = ComAtProtoNS(this)
     val app = AppBskyNS(this)
+
+    /**
+     * Resolves the PDS service endpoint for a given DID.
+     */
+    suspend fun resolvePds(did: String): Result<String> = runCatching {
+        val doc = didResolver.resolve(did).getOrThrow()
+        val pdsService = doc.service.find { it.type == "AtprotoPersonalDataServer" }
+            ?: throw Exception("No PDS service found for DID: $did")
+        pdsService.serviceEndpoint
+    }
 }
