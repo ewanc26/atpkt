@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="uk.ewancroft.atpmc.gen.LexiconGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T19:40:02.204Z" hostname="macmini" time="0.075">
+<testsuite name="uk.ewancroft.atpmc.gen.LexiconGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T19:41:27.903Z" hostname="macmini" time="0.167">
   <properties/>
-  <testcase name="test generate kotlin class()" classname="uk.ewancroft.atpmc.gen.LexiconGeneratorTest" time="0.075"/>
+  <testcase name="test generate kotlin class()" classname="uk.ewancroft.atpmc.gen.LexiconGeneratorTest" time="0.167"/>
   <system-out><![CDATA[package uk.ewancroft.atpmc.generated
 
 import kotlin.String
