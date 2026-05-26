@@ -1,0 +1,9 @@
+# Set default line ending to LF
+* text=auto eol=lf
+
+# Explicitly declare text files
+*.kt text
+*.gradle text
+*.md text
+*.json text
+*.nix text
