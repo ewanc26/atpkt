@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="uk.ewancroft.atpmc.gen.LexiconGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T19:40:02.204Z" hostname="macmini" time="0.075">
+  <properties/>
+  <testcase name="test generate kotlin class()" classname="uk.ewancroft.atpmc.gen.LexiconGeneratorTest" time="0.075"/>
+  <system-out><![CDATA[package uk.ewancroft.atpmc.generated
+
+import kotlin.String
+import kotlinx.serialization.Serializable
+
+@Serializable
+public data class Test(
+  public val message: String,
+)
+
+]]></system-out>
+  <system-err><![CDATA[SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+]]></system-err>
+</testsuite>
