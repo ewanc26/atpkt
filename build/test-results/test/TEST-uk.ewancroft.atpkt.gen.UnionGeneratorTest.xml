@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="uk.ewancroft.atpkt.gen.UnionGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T20:18:53.331Z" hostname="macmini" time="0.005">
+  <properties/>
+  <testcase name="test generate union type()" classname="uk.ewancroft.atpkt.gen.UnionGeneratorTest" time="0.005"/>
+  <system-out><![CDATA[package uk.ewancroft.atpkt.generated
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+public data class Union(
+  public val unionField: UnionFieldUnion,
+)
+
+@Serializable
+public sealed interface UnionFieldUnion
+
+@Serializable
+public sealed interface UnionFieldUnion
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

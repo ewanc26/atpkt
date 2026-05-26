@@ -22,7 +22,7 @@ dependencies {
 }
 
 tasks.register('generateLexiconClasses', JavaExec) {
-    mainClass = 'uk.ewancroft.atpmc.gen.GeneratorTool'
+    mainClass = 'uk.ewancroft.atpkt.gen.GeneratorTool'
     classpath = sourceSets.main.runtimeClasspath
 }
 

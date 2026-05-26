@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="uk.ewancroft.atpmc.lexicon.registry.LexiconLoaderTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-26T20:10:33.475Z" hostname="macmini" time="0.003">
-  <properties/>
-  <testcase name="test load and register lexicon()" classname="uk.ewancroft.atpmc.lexicon.registry.LexiconLoaderTest" time="0.003"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
