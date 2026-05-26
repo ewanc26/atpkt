@@ -38,7 +38,7 @@ class ComAtProtoRepoNS(private val agent: Agent) {
     }
 
     suspend fun getTimelineRequest(params: String): Result<String> = runCatching {
-        val pdsUrl = "https://bsky.social"
+        val pdsUrl = "https://bsky.social" // Default fallback
         agent.sessionManager.client.xrpcRequest(
             method = "GET",
             endpoint = "app.bsky.feed.getTimeline?$params",
@@ -46,12 +46,21 @@ class ComAtProtoRepoNS(private val agent: Agent) {
         ).getOrThrow()
     }
 
+    suspend fun getFeedRequest(params: String): Result<String> = runCatching {
+        val pdsUrl = "https://bsky.social" // Default fallback
+        agent.sessionManager.client.xrpcRequest(
+            method = "GET",
+            endpoint = "app.bsky.feed.getFeed?$params",
+            pdsUrl = pdsUrl
+        ).getOrThrow()
+    }
+
     suspend fun listNotificationsRequest(params: String): Result<String> = runCatching {
-        val pdsUrl = "https://bsky.social"
+        val pdsUrl = "https://bsky.social" // Default fallback
         agent.sessionManager.client.xrpcRequest(
             method = "GET",
             endpoint = "app.bsky.notification.listNotifications?$params",
             pdsUrl = pdsUrl
         ).getOrThrow()
     }
-}
+    }

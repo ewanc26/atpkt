@@ -105,12 +105,13 @@ class AppBskyFeedNS(private val agent: Agent) {
         uk.ewancroft.atpkt.xrpc.Xrpc.json.decodeFromString<ThreadView>(response)
     }
 
-    suspend fun getTimeline(cursor: String? = null, limit: Int = 50): Result<TimelineResponse> = runCatching {
+    suspend fun getFeed(feed: String, cursor: String? = null, limit: Int = 50): Result<TimelineResponse> = runCatching {
         val params = buildString {
-            append("limit=$limit")
+            append("feed=${java.net.URLEncoder.encode(feed, "UTF-8")}")
+            append("&limit=$limit")
             cursor?.let { append("&cursor=$it") }
         }
-        val response = agent.com.repo.getTimelineRequest(params).getOrThrow()
+        val response = agent.com.repo.getFeedRequest(params).getOrThrow()
         uk.ewancroft.atpkt.xrpc.Xrpc.json.decodeFromString<TimelineResponse>(response)
     }
 }
