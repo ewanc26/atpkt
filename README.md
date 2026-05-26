@@ -9,16 +9,17 @@ A professional-grade, modular ATProtocol SDK for Kotlin.
 `atpkt` follows the official ATProtocol "Agent" design:
 - **Core Library**: Networking, XRPC client, and Session management.
 - **Namespaced API**: Hierarchical access to protocol endpoints (e.g., `agent.com.atproto.*`, `agent.app.bsky.*`).
-- **Lexicon Registry**: Auto-generation of type-safe Kotlin models from official schema definitions.
+- **Lexicon Registry**: Auto-generation of type-safe Kotlin models from official schema definitions (using KotlinPoet).
 - **Repository Foundations**: Content-addressed storage and Merkle Search Tree (MST) structures.
+- **Streaming**: Reactive, authenticated WebSocket subscription client.
 
 ## Roadmap
 - [x] Core extraction (Tid, AtProtoClient, SessionManager, RecordManager)
 - [x] Namespaced API structure
 - [x] AST-driven Lexicon generation (KotlinPoet)
 - [x] MST & CID foundations
-- [ ] Full XRPC Subscription support
-- [ ] DID/PLC Identity resolution
+- [x] WebSocket Subscription (Firehose) support
+- [x] DID/PLC Identity resolution
 - [ ] OAuth2 / DPoP compliance
 
 ## Getting Started
