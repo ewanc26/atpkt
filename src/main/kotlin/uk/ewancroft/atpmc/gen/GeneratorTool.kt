@@ -17,7 +17,12 @@ object GeneratorTool {
         val outputDir = File("src/main/kotlin")
         
         // Load lexicons and generate classes
-        val lexicons = listOf("lexicons/com.example.test.json")
+        val lexicons = listOf(
+            "lexicons/com.example.test.json",
+            "lexicons/com.jollywhoppers.minecraft.player.profile.json",
+            "lexicons/com.jollywhoppers.minecraft.achievement.json",
+            "lexicons/com.jollywhoppers.minecraft.player.stats.json"
+        )
         lexicons.forEach { path ->
             loader.loadFromResource(path)
         }

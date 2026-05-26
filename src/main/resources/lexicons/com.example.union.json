@@ -1,0 +1,30 @@
+{
+  "lexicon": 1,
+  "id": "com.example.union",
+  "defs": {
+    "main": {
+      "type": "record",
+      "record": {
+        "type": "object",
+        "properties": {
+          "unionField": {
+            "type": "union",
+            "refs": ["com.example.typeA", "com.example.typeB"]
+          }
+        }
+      }
+    },
+    "typeA": {
+      "type": "object",
+      "properties": {
+        "fieldA": { "type": "string" }
+      }
+    },
+    "typeB": {
+      "type": "object",
+      "properties": {
+        "fieldB": { "type": "string" }
+      }
+    }
+  }
+}
