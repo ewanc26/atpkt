@@ -10,7 +10,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        jdk = pkgs.jdk21;
+        jdk = pkgs.jdk25;
       in
       {
         devShells.default = pkgs.mkShell {
@@ -24,7 +24,7 @@
           shellHook = ''
             export JAVA_HOME=${jdk}
             export PATH=$JAVA_HOME/bin:$PATH
-            echo "atpkt development environment ready (OpenJDK 21 + Gradle)"
+            echo "atpkt development environment ready (OpenJDK 25 + Gradle)"
           '';
         };
       }
