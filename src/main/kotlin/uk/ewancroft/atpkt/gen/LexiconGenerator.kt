@@ -71,6 +71,11 @@ object LexiconGenerator {
                 val itemType = mapType(key, items, generatedTypes)
                 List::class.asTypeName().parameterizedBy(itemType)
             }
+            "ref" -> {
+                val ref = json["ref"]?.jsonPrimitive?.content ?: "JsonElement"
+                val typeName = ref.split("#").last().replaceFirstChar { it.uppercase() }
+                ClassName("uk.ewancroft.atpkt.generated", typeName)
+            }
             "union" -> {
                 val unionName = key.replaceFirstChar { it.uppercase() } + "Union"
                 // Generate a sealed interface for the union
