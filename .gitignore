@@ -28,6 +28,10 @@ hs_err_pid*
 replay_pid*
 
 ### Kotlin ###
+build/
+.kotlin/
+.gradle/
+
 # Compiled class file
 
 # Log file
