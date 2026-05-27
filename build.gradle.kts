@@ -29,7 +29,11 @@ dependencies {
 
 kotlin {
     jvmToolchain(25)
+    sourceSets.main {
+        kotlin.exclude("uk/ewancroft/atpkt/generated/**")
+    }
 }
+
 
 publishing {
     publications {
@@ -42,6 +46,7 @@ publishing {
 tasks.register<JavaExec>("generateLexiconClasses") {
     description = "Runs the Lexicon → Kotlin code generator (KotlinPoet AST)."
     group = "build"
+    dependsOn("processResources")
     mainClass.set("uk.ewancroft.atpkt.gen.GeneratorTool")
     classpath = sourceSets.main.get().runtimeClasspath
 }

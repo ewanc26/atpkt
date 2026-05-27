@@ -13,80 +13,154 @@ object LexiconGenerator {
 
     fun generateKotlinClass(lexiconId: String): FileSpec? {
         val schema = LexiconRegistry.get(lexiconId) ?: return null
+        val defs = schema["defs"]?.jsonObject ?: return null
 
-        val defs = schema["defs"]?.jsonObject
-        val main = defs?.get("main")?.jsonObject
-        val record = main?.get("record")?.jsonObject ?: return null
-
-        val className = lexiconId.split(".").last().replaceFirstChar { it.uppercase() }
-        val packageName = "uk.ewancroft.atpkt.generated"
-
-        val generatedTypes = mutableListOf<TypeSpec>()
-        val rootType = generateTypeSpec(className, record, generatedTypes)
+        val packageParts = lexiconId.split(".")
+        val className = packageParts.last().replaceFirstChar { it.uppercase() }
+        val packageName = "uk.ewancroft.atpkt.generated." + packageParts.dropLast(1).joinToString(".")
 
         val fileBuilder = FileSpec.builder(packageName, className)
-            .addType(rootType)
+        val generatedTypes = mutableListOf<TypeSpec>()
+        val generatedUnions = mutableSetOf<String>()
+
+        defs.forEach { (defKey, defValue) ->
+            val defObj = defValue.jsonObject
+            val type = defObj["type"]?.jsonPrimitive?.content ?: return@forEach
+            
+            val typeName = if (defKey == "main") className else defKey.replaceFirstChar { it.uppercase() }
+            
+            when (type) {
+                "record", "object" -> {
+                    generatedTypes.add(generateTypeSpec(typeName, defObj, generatedTypes, packageName, generatedUnions))
+                }
+                "query", "procedure" -> {
+                    defObj["input"]?.jsonObject?.let { input ->
+                        generatedTypes.add(generateTypeSpec("${typeName}Input", input, generatedTypes, packageName, generatedUnions))
+                    }
+                    defObj["output"]?.jsonObject?.let { output ->
+                        generatedTypes.add(generateTypeSpec("${typeName}Output", output, generatedTypes, packageName, generatedUnions))
+                    }
+                }
+            }
+        }
+
+        if (generatedTypes.isEmpty()) return null
 
         generatedTypes.forEach { fileBuilder.addType(it) }
 
         return fileBuilder.build()
     }
 
-    private fun generateTypeSpec(name: String, schema: JsonObject, generatedTypes: MutableList<TypeSpec>): TypeSpec {
+    private fun generateTypeSpec(
+        name: String, 
+        schema: JsonObject, 
+        generatedTypes: MutableList<TypeSpec>,
+        packageName: String,
+        generatedUnions: MutableSet<String>
+    ): TypeSpec {
         val typeBuilder = TypeSpec.classBuilder(name)
-            .addModifiers(KModifier.DATA)
             .addAnnotation(Serializable::class)
 
-        val properties = schema["properties"]?.jsonObject ?: return typeBuilder.build()
-
-        typeBuilder.primaryConstructor(FunSpec.constructorBuilder().apply {
-            properties.forEach { (key, value) ->
-                val type = mapType(key, value.jsonObject, generatedTypes)
-                addParameter(key, type)
-            }
-        }.build())
-
-        properties.forEach { (key, value) ->
-            val type = mapType(key, value.jsonObject, generatedTypes)
-            typeBuilder.addProperty(PropertySpec.builder(key, type).initializer(key).build())
+        val properties = if (schema["type"]?.jsonPrimitive?.content == "record") {
+            schema["record"]?.jsonObject?.get("properties")?.jsonObject
+        } else {
+            schema["properties"]?.jsonObject
         }
+        
+        if (properties == null || properties.isEmpty()) {
+            // Not a data class if no properties
+            return typeBuilder.build()
+        }
+
+        typeBuilder.addModifiers(KModifier.DATA)
+        val constructorBuilder = FunSpec.constructorBuilder()
+        properties.forEach { (key, value) ->
+            val sanitizedKey = if (key in KOTLIN_KEYWORDS) "`$key`" else key
+            val type = mapType(name, key, value.jsonObject, generatedTypes, packageName, generatedUnions)
+            constructorBuilder.addParameter(
+                ParameterSpec.builder(sanitizedKey, type)
+                    .defaultValue("null")
+                    .build()
+            )
+            typeBuilder.addProperty(
+                PropertySpec.builder(sanitizedKey, type)
+                    .initializer(sanitizedKey)
+                    .build()
+            )
+        }
+        typeBuilder.primaryConstructor(constructorBuilder.build())
 
         return typeBuilder.build()
     }
 
-    private fun mapType(key: String, json: JsonObject, generatedTypes: MutableList<TypeSpec>): TypeName {
+    private fun mapType(
+        parentName: String,
+        key: String, 
+        json: JsonObject, 
+        generatedTypes: MutableList<TypeSpec>,
+        packageName: String,
+        generatedUnions: MutableSet<String>
+    ): TypeName {
         val type = json["type"]?.jsonPrimitive?.content
         return when (type) {
-            "string" -> String::class.asTypeName()
-            "integer" -> Long::class.asTypeName()
-            "boolean" -> Boolean::class.asTypeName()
+            "string" -> String::class.asTypeName().copy(nullable = true)
+            "integer" -> Long::class.asTypeName().copy(nullable = true)
+            "boolean" -> Boolean::class.asTypeName().copy(nullable = true)
+            "unknown" -> JsonElement::class.asTypeName().copy(nullable = true)
+            "bytes" -> ByteArray::class.asTypeName().copy(nullable = true)
+            "cid-link" -> String::class.asTypeName().copy(nullable = true)
             "object" -> {
-                val nestedName = key.replaceFirstChar { it.uppercase() }
-                val nestedType = generateTypeSpec(nestedName, json, generatedTypes)
-                generatedTypes.add(nestedType)
-                ClassName("uk.ewancroft.atpkt.generated", nestedName)
+                val nestedName = parentName + key.replaceFirstChar { it.uppercase() }
+                if (generatedTypes.none { it.name == nestedName }) {
+                    val nestedType = generateTypeSpec(nestedName, json, generatedTypes, packageName, generatedUnions)
+                    generatedTypes.add(nestedType)
+                }
+                ClassName(packageName, nestedName).copy(nullable = true)
             }
             "array" -> {
-                val items = json["items"]?.jsonObject ?: return List::class.asTypeName().parameterizedBy(JsonElement::class.asTypeName())
-                val itemType = mapType(key, items, generatedTypes)
-                List::class.asTypeName().parameterizedBy(itemType)
+                val items = json["items"]?.jsonObject ?: return List::class.asTypeName().parameterizedBy(JsonElement::class.asTypeName()).copy(nullable = true)
+                val itemType = mapType(parentName, key, items, generatedTypes, packageName, generatedUnions)
+                List::class.asTypeName().parameterizedBy(itemType).copy(nullable = true)
             }
             "ref" -> {
                 val ref = json["ref"]?.jsonPrimitive?.content ?: "JsonElement"
-                val typeName = ref.split("#").last().replaceFirstChar { it.uppercase() }
-                ClassName("uk.ewancroft.atpkt.generated", typeName)
+                if (ref.startsWith("#")) {
+                    val typeName = ref.substring(1).replaceFirstChar { it.uppercase() }
+                    ClassName(packageName, typeName).copy(nullable = true)
+                } else {
+                    val parts = ref.split("#")
+                    val refLexId = parts[0]
+                    val refDef = parts.getOrNull(1) ?: "main"
+                    
+                    val refPackageParts = refLexId.split(".")
+                    val refClassName = if (refDef == "main") {
+                        refPackageParts.last().replaceFirstChar { it.uppercase() }
+                    } else {
+                        refDef.replaceFirstChar { it.uppercase() }
+                    }
+                    val refPackageName = "uk.ewancroft.atpkt.generated." + refPackageParts.dropLast(1).joinToString(".")
+                    ClassName(refPackageName, refClassName).copy(nullable = true)
+                }
             }
             "union" -> {
-                val unionName = key.replaceFirstChar { it.uppercase() } + "Union"
-                // Generate a sealed interface for the union
-                val unionInterface = TypeSpec.interfaceBuilder(unionName)
-                    .addModifiers(KModifier.SEALED)
-                    .addAnnotation(Serializable::class)
-                    .build()
-                generatedTypes.add(unionInterface)
-                ClassName("uk.ewancroft.atpkt.generated", unionName)
+                val unionName = parentName + key.replaceFirstChar { it.uppercase() } + "Union"
+                if (!generatedUnions.contains(unionName)) {
+                    val unionInterface = TypeSpec.interfaceBuilder(unionName)
+                        .addModifiers(KModifier.SEALED)
+                        .addAnnotation(Serializable::class)
+                        .build()
+                    generatedTypes.add(unionInterface)
+                    generatedUnions.add(unionName)
+                }
+                ClassName(packageName, unionName).copy(nullable = true)
             }
-            else -> JsonElement::class.asTypeName()
+            else -> JsonElement::class.asTypeName().copy(nullable = true)
         }
     }
+
+    private val KOTLIN_KEYWORDS = setOf(
+        "package", "as", "as?", "break", "class", "continue", "do", "else", "false", "for", "fun", "if", "in", "!in",
+        "interface", "is", "!is", "null", "object", "package", "return", "super", "this", "throw", "true", "try",
+        "typealias", "val", "var", "when", "while"
+    )
 }

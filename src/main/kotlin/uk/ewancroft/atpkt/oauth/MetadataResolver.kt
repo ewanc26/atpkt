@@ -1,49 +1,67 @@
 package uk.ewancroft.atpkt.oauth
 
-import kotlinx.serialization.Serializable
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.serialization.json.Json
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.time.Duration
+import uk.ewancroft.atpkt.client.AtpHttpClient
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Resolves OAuth authorization server metadata.
- * Mirrors the logic found in atproto/packages/oauth/oauth-client/src/oauth-authorization-server-metadata-resolver.ts
+ * Resolves OAuth server metadata (Authorization and Resource servers).
  */
-class MetadataResolver(
-    private val httpClient: HttpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build()
-) {
+class MetadataResolver {
+    private val client = AtpHttpClient.client
     private val json = Json { ignoreUnknownKeys = true }
-    private val cache = ConcurrentHashMap<String, AuthorizationServerMetadata>()
+    private val authCache = ConcurrentHashMap<String, AuthorizationServerMetadata>()
+    private val resourceCache = ConcurrentHashMap<String, ResourceServerMetadata>()
 
-    @Serializable
-    data class AuthorizationServerMetadata(
-        val issuer: String,
-        val authorization_endpoint: String,
-        val token_endpoint: String,
-        val jwks_uri: String,
-        val response_types_supported: List<String>,
-        val grant_types_supported: List<String>,
-        val dpop_signing_alg_values_supported: List<String>
-    )
+    /**
+     * Fetches the resource server metadata from a PDS.
+     */
+    suspend fun resolveResourceServer(pdsUrl: String): Result<ResourceServerMetadata> = runCatching {
+        resourceCache[pdsUrl]?.let { return@runCatching it }
 
-    suspend fun resolve(pdsUrl: String): Result<AuthorizationServerMetadata> = runCatching {
-        cache[pdsUrl]?.let { return@runCatching it }
-
-        val uri = URI.create("$pdsUrl/.well-known/oauth-authorization-server")
-        val request = HttpRequest.newBuilder().uri(uri).GET().build()
+        val url = "$pdsUrl/.well-known/oauth-protected-resource"
+        val response = client.get(url)
         
-        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        
-        if (response.statusCode() != 200) {
-            throw Exception("Failed to resolve OAuth metadata: ${response.statusCode()}")
+        if (!response.status.isSuccess()) {
+            throw Exception("Failed to resolve resource server metadata: ${response.status}")
         }
 
-        val metadata = json.decodeFromString<AuthorizationServerMetadata>(response.body())
-        cache[pdsUrl] = metadata
+        val metadata = response.body<ResourceServerMetadata>()
+        resourceCache[pdsUrl] = metadata
+        metadata
+    }
+
+    /**
+     * Fetches the authorization server metadata.
+     */
+    suspend fun resolveAuthorizationServer(issuer: String): Result<AuthorizationServerMetadata> = runCatching {
+        authCache[issuer]?.let { return@runCatching it }
+
+        val url = "$issuer/.well-known/oauth-authorization-server"
+        val response = client.get(url)
+        
+        if (!response.status.isSuccess()) {
+            throw Exception("Failed to resolve authorization server metadata: ${response.status}")
+        }
+
+        val metadata = response.body<AuthorizationServerMetadata>()
+        
+        // Security Validations
+        // 1. Validate issuer (Mix-up attack protection)
+        if (metadata.issuer.trimEnd('/') != issuer.trimEnd('/')) {
+            throw Exception("Invalid issuer: expected $issuer but got ${metadata.issuer}")
+        }
+
+        // 2. ATPROTO requires client_id_metadata_document
+        if (!metadata.clientIdMetadataDocumentSupported) {
+            throw Exception("Authorization server does not support client_id_metadata_document")
+        }
+
+        authCache[issuer] = metadata
         metadata
     }
 }
