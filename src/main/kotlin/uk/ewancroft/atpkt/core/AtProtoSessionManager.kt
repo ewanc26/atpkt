@@ -51,7 +51,21 @@ class AtProtoSessionManager(
         val createdAt: Long = System.currentTimeMillis(),
         val lastRefreshed: Long = System.currentTimeMillis(),
         val authType: String = "app_password",
-    )
+        // OAuth fields
+        val clientId: String? = null,
+        val tokenEndpoint: String? = null,
+        val dpopPrivateKeyEncoded: ByteArray? = null,
+        val dpopPublicKeyEncoded: ByteArray? = null,
+        val authServerNonce: String? = null
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is PlayerSession) return false
+            return did == other.did && accessJwt == other.accessJwt
+        }
+
+        override fun hashCode(): Int = did.hashCode()
+    }
 
     @Serializable
     private data class SessionStorage(
@@ -103,24 +117,49 @@ class AtProtoSessionManager(
     suspend fun refreshSession(uuid: UUID): Result<PlayerSession> = runCatching {
         val oldSession = sessions[uuid] ?: throw Exception("No session")
         
-        val refreshResponse = client.xrpcRequest(
-            method = "POST",
-            endpoint = "com.atproto.server.refreshSession",
-            pdsUrl = oldSession.pdsUrl,
-            body = """{"refreshJwt": "${oldSession.refreshJwt}"}"""
-        ).getOrThrow()
-        
-        val tokens = json.decodeFromString<AtProtoClient.CreateSessionResponse>(refreshResponse)
-        
-        val newSession = oldSession.copy(
-            accessJwt = tokens.accessJwt,
-            refreshJwt = tokens.refreshJwt,
-            lastRefreshed = System.currentTimeMillis()
-        )
-        
-        sessions[uuid] = newSession
-        save()
-        newSession
+        if (oldSession.authType == "oauth") {
+            val oauthClient = uk.ewancroft.atpkt.oauth.OAuthClient(client)
+            val privateKey = java.security.KeyFactory.getInstance("EC").generatePrivate(java.security.spec.PKCS8EncodedKeySpec(oldSession.dpopPrivateKeyEncoded))
+            val publicKey = java.security.KeyFactory.getInstance("EC").generatePublic(java.security.spec.X509EncodedKeySpec(oldSession.dpopPublicKeyEncoded))
+            val keyPair = java.security.KeyPair(publicKey, privateKey)
+            
+            val tokens = oauthClient.refreshToken(
+                oldSession.refreshJwt,
+                oldSession.clientId!!,
+                oldSession.tokenEndpoint!!,
+                keyPair,
+                oldSession.authServerNonce
+            ).getOrThrow()
+            
+            val newSession = oldSession.copy(
+                accessJwt = tokens.accessToken,
+                refreshJwt = tokens.refreshToken ?: oldSession.refreshJwt,
+                lastRefreshed = System.currentTimeMillis()
+            )
+            
+            sessions[uuid] = newSession
+            save()
+            newSession
+        } else {
+            val refreshResponse = client.xrpcRequest(
+                method = "POST",
+                endpoint = "com.atproto.server.refreshSession",
+                pdsUrl = oldSession.pdsUrl,
+                body = """{"refreshJwt": "${oldSession.refreshJwt}"}"""
+            ).getOrThrow()
+            
+            val tokens = json.decodeFromString<AtProtoClient.CreateSessionResponse>(refreshResponse)
+            
+            val newSession = oldSession.copy(
+                accessJwt = tokens.accessJwt,
+                refreshJwt = tokens.refreshJwt,
+                lastRefreshed = System.currentTimeMillis()
+            )
+            
+            sessions[uuid] = newSession
+            save()
+            newSession
+        }
     }
 
     private fun load() = fileLock.read {

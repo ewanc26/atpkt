@@ -6,11 +6,20 @@ import kotlinx.serialization.json.JsonElement
 
 @Serializable
 public data class Profile(
-  public val player: JsonElement,
   public val displayName: String,
-  public val bio: String,
-  public val primaryServer: JsonElement,
-  public val favoriteGameMode: String,
+  public val description: String,
+  public val pronouns: String,
+  public val website: String,
+  public val avatar: JsonElement,
+  public val banner: JsonElement,
+  public val labels: LabelsUnion,
+  public val joinedViaStarterPack: Com.atproto.repo.strongRef,
+  public val pinnedPost: Com.atproto.repo.strongRef,
   public val createdAt: String,
-  public val updatedAt: String,
 )
+
+@Serializable
+public sealed interface LabelsUnion
+
+@Serializable
+public sealed interface LabelsUnion

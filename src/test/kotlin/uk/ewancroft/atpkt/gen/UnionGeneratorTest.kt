@@ -14,10 +14,10 @@ class UnionGeneratorTest {
         
         assertNotNull(fileSpec)
         val kotlinCode = fileSpec.toString()
+        println("Generated Code:\n$kotlinCode")
         
-        // Check for sealed interface generation for the union field
-        assertTrue(kotlinCode.contains("interface UnionFieldUnion"))
+        // The union name depends on parent class name (Union) and field name (unionField)
+        assertTrue(kotlinCode.contains("interface UnionUnionFieldUnion"))
         assertTrue(kotlinCode.contains("sealed"))
-        println(kotlinCode)
     }
 }

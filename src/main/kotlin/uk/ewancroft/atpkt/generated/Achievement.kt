@@ -3,12 +3,11 @@ package uk.ewancroft.atpkt.generated
 import kotlin.Boolean
 import kotlin.String
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 @Serializable
 public data class Achievement(
-  public val player: JsonElement,
-  public val server: JsonElement,
+  public val player: PlayerReference,
+  public val server: ServerReference,
   public val achievementId: String,
   public val achievementName: String,
   public val achievementDescription: String,

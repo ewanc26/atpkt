@@ -1,26 +1,20 @@
 package uk.ewancroft.atpkt.core
 
-import uk.ewancroft.atpkt.xrpc.Xrpc
-import uk.ewancroft.atpkt.lexicon.Lexicons
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.time.Duration
+import uk.ewancroft.atpkt.client.AtpHttpClient
+import uk.ewancroft.atpkt.xrpc.Xrpc
 
 /**
- * Enhanced AT Protocol client.
+ * Enhanced AT Protocol client using Ktor.
  * Handles identity resolution, authentication, and XRPC requests.
  */
 class AtProtoClient(
     private val fallbackPdsUrl: String = "https://bsky.social"
 ) {
-    private val httpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(10))
-        .followRedirects(HttpClient.Redirect.NEVER)
-        .build()
+    private val client = AtpHttpClient.client
     
     @Serializable
     data class CreateSessionResponse(
@@ -39,32 +33,25 @@ class AtProtoClient(
     ): Result<String> = runCatching {
         val url = "$pdsUrl/xrpc/$endpoint"
         
-        val requestBuilder = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .header("Content-Type", "application/json")
-            .timeout(Duration.ofSeconds(15))
-
-        accessJwt?.let { requestBuilder.header("Authorization", "Bearer $it") }
-
-        val request = when (method.uppercase()) {
-            "GET" -> requestBuilder.GET().build()
-            "POST" -> requestBuilder.POST(
-                HttpRequest.BodyPublishers.ofString(body ?: "{}")
-            ).build()
-            else -> throw IllegalArgumentException("Unsupported HTTP method")
+        val response = client.request(url) {
+            this.method = HttpMethod.parse(method.uppercase())
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            accessJwt?.let { header(HttpHeaders.Authorization, "Bearer $it") }
+            if (body != null) {
+                setBody(body)
+            }
         }
-
-        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         
-        if (response.statusCode() !in 200..299) {
+        if (!response.status.isSuccess()) {
+            val responseBody = response.bodyAsText()
             val error = try {
-                Xrpc.json.decodeFromString<Xrpc.XrpcError>(response.body())
+                Xrpc.json.decodeFromString<Xrpc.XrpcError>(responseBody)
             } catch (e: Exception) {
-                Xrpc.XrpcError("unknown", response.body())
+                Xrpc.XrpcError("unknown", responseBody)
             }
             throw Exception("Request failed: ${error.error} - ${error.message}")
         }
 
-        response.body()
+        response.bodyAsText()
     }
 }

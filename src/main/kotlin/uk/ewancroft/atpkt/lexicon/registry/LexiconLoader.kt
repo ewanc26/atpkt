@@ -2,6 +2,7 @@ package uk.ewancroft.atpkt.lexicon.registry
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.InputStream
 import org.slf4j.LoggerFactory
 
@@ -25,7 +26,7 @@ object LexiconLoader {
             val schema = json.decodeFromString<JsonObject>(content)
             
             // Extract the 'id' field from the lexicon schema
-            val id = schema["id"]?.toString()?.replace("\"", "")
+            val id = schema["id"]?.jsonPrimitive?.content
             
             if (id != null) {
                 LexiconRegistry.register(id, schema)

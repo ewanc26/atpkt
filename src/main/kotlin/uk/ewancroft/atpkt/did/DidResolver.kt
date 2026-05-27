@@ -1,26 +1,23 @@
 package uk.ewancroft.atpkt.did
 
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.time.Duration
+import uk.ewancroft.atpkt.client.AtpHttpClient
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Resolver for DID/PLC documents with in-memory caching.
+ * Uses Ktor for network requests.
  */
 class DidResolver(
     private val plcUrl: String = "https://plc.directory",
     private val cacheTtlSeconds: Long = 3600
 ) {
-    private val httpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(10))
-        .build()
-        
+    private val client = AtpHttpClient.client
     private val json = Json { ignoreUnknownKeys = true }
     private val cache = ConcurrentHashMap<String, CachedDidDocument>()
 
@@ -62,18 +59,13 @@ class DidResolver(
             else -> throw IllegalArgumentException("Unsupported DID method: $did")
         }
 
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .GET()
-            .build()
-
-        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
+        val response = client.get(url)
         
-        if (response.statusCode() != 200) {
-            throw Exception("DID resolution failed: ${response.statusCode()}")
+        if (!response.status.isSuccess()) {
+            throw Exception("DID resolution failed: ${response.status}")
         }
 
-        val doc = json.decodeFromString<DidDocument>(response.body())
+        val doc = json.decodeFromString<DidDocument>(response.bodyAsText())
 
         // Basic validation: ensure the ID matches and services are valid
         if (doc.id != did) {
