@@ -1,0 +1,19 @@
+package uk.ewancroft.atpkt.generated.site.standard.theme
+
+import kotlin.Long
+import kotlinx.serialization.Serializable
+
+@Serializable
+public data class Rgb(
+  public val b: Long? = null,
+  public val g: Long? = null,
+  public val r: Long? = null,
+)
+
+@Serializable
+public data class Rgba(
+  public val a: Long? = null,
+  public val b: Long? = null,
+  public val g: Long? = null,
+  public val r: Long? = null,
+)

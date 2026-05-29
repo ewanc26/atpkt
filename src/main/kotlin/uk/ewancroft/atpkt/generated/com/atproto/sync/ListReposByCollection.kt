@@ -1,0 +1,14 @@
+package uk.ewancroft.atpkt.generated.com.atproto.sync
+
+import kotlin.String
+import kotlinx.serialization.Serializable
+
+@Serializable
+public data class ListReposByCollectionOutput(
+  public val unused: String? = null,
+)
+
+@Serializable
+public data class Repo(
+  public val did: String? = null,
+)
