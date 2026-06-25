@@ -6,8 +6,11 @@ import uk.ewancroft.atpkt.repo.cid.CidUtil
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+// ── Merkle Search Tree ─────────────────────────────
+
 /**
- * Basic entry in the Merkle Search Tree (MST).
+ * A single key-to-CID entry in the Merkle Search Tree.
+ * Maps a record key (collection/rkey) to its content CID.
  */
 @Serializable
 data class MstEntry(
@@ -17,6 +20,9 @@ data class MstEntry(
 
 /**
  * A node in the Merkle Search Tree.
+ * Each node has a fanout-based structure: entries at this level
+ * plus child subtrees for deeper partitioning.
+ * Spec: https://atproto.com/specs/mst
  */
 @Serializable
 data class MstNode(

@@ -3,6 +3,8 @@ package uk.ewancroft.atpkt.lexicon
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
+// ── Lexicon constants and base types ───────────────
+
 /**
  * Base record interface for AT Protocol lexicons.
  * All AT Protocol records should extend this or use it as a base.
@@ -13,6 +15,8 @@ interface AtProtoRecord {
 
 /**
  * Common schema definitions used across AT Protocol services.
+ * These constants mirror the NSID strings for the most frequently
+ * used com.atproto.* endpoints.
  */
 object Lexicons {
     const val COM_ATPROTO_REPO_CREATE_RECORD = "com.atproto.repo.createRecord"

@@ -13,8 +13,14 @@ import io.ktor.serialization.kotlinx.*
 import kotlinx.serialization.cbor.Cbor
 import java.net.URI
 
+// ── AT Protocol firehose subscription client ───────
+
 /**
  * Base subscription client for AT Protocol firehose streams.
+ * Connects to the XRPC subscription endpoint over WebSocket (wss://)
+ * and emits incoming binary frames as a Kotlin coroutine Flow.
+ *
+ * Spec: https://atproto.com/specs/subscriptions
  */
 @OptIn(ExperimentalSerializationApi::class)
 class SubscriptionClient(private val pdsUrl: String) {

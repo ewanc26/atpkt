@@ -8,9 +8,14 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import uk.ewancroft.atpkt.xrpc.Xrpc
 
+// ── XRPC client ────────────────────────────────────
+
 /**
  * A robust, low-level XRPC client for the AT Protocol.
  * Inspired by the 'Client' interface in atproto.blue and atproto-js.
+ *
+ * Handles the wire protocol: serialises query/procedure calls, attaches
+ * auth headers, and deserialises responses or error envelopes.
  */
 class XrpcClient(
     val pdsUrl: String = "https://bsky.social",

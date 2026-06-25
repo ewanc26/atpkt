@@ -13,9 +13,14 @@ import uk.ewancroft.atpkt.did.DidResolver
 import uk.ewancroft.atpkt.oauth.dpop.DpopProof
 import java.security.KeyPair
 
+// ── OAuth 2.0 client (AT Protocol flavour) ─────────
+
 /**
  * Core OAuth client for AT Protocol.
- * Handles metadata discovery, PAR, and token management with DPoP.
+ * Handles metadata discovery, PAR (Pushed Authorization Requests),
+ * token exchange, and session refresh, all bound with DPoP.
+ *
+ * Spec: https://atproto.com/specs/oauth
  */
 class OAuthClient(
     private val atProtoClient: AtProtoClient = AtProtoClient(),

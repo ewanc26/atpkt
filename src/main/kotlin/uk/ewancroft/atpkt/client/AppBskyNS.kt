@@ -4,8 +4,11 @@ import uk.ewancroft.atpkt.agent.Agent
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
+// ── app.bsky namespace ─────────────────────────────
+
 /**
  * Namespaced access for app.bsky.* XRPC endpoints.
+ * Routes through the core Agent's request machinery.
  */
 class AppBskyNS(private val agent: Agent) {
     val actor = AppBskyActorNS(agent)

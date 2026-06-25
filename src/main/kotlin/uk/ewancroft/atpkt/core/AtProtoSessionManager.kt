@@ -14,13 +14,11 @@ import javax.crypto.SecretKey
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
+// ── Session management ─────────────────────────────
+
 /**
  * Manages AT Protocol authentication sessions.
  * Handles token storage, automatic refresh, and session lifecycle.
- * 
- * NOTE: This is the core library implementation. Actual storage encryption 
- * logic should be provided or handled by the implementation using an 
- * `IEncryptionProvider` interface.
  */
 class AtProtoSessionManager(
     private val storageFile: Path,

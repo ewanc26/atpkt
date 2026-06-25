@@ -9,6 +9,7 @@ import io.ktor.utils.io.*
 import kotlinx.serialization.Serializable
 import uk.ewancroft.atpkt.xrpc.Xrpc
 
+// Test-only response model for mock XRPC calls
 @Serializable
 data class MockResponse(val success: Boolean)
 

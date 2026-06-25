@@ -8,9 +8,12 @@ import java.nio.file.Paths
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
 
+// ── Code generator CLI entry point ─────────────────
+
 /**
  * CLI entry point for the code generator.
- */
+ * Walks the lexicon resource files, registers them, then generates
+ * corresponding Kotlin data classes via KotlinPoet.
 object GeneratorTool {
     @JvmStatic
     fun main(args: Array<String>) {

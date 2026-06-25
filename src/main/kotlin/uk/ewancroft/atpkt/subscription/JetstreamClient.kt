@@ -11,6 +11,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
+// ── Jetstream event models ─────────────────────────
+
+/**
+ * A single event from Bluesky's Jetstream firehose.
+ * Jetstream is a filtered JSON-based alternative to the CBOR subscription stream.
+ */
 @Serializable
 data class JetstreamEvent(
     val did: String,
@@ -19,6 +25,10 @@ data class JetstreamEvent(
     val commit: JetstreamCommit? = null
 )
 
+/**
+ * Commit metadata within a Jetstream event.
+ * Describes the operation (create/update/delete), collection, and record key.
+ */
 @Serializable
 data class JetstreamCommit(
     val rev: String,
@@ -29,8 +39,13 @@ data class JetstreamCommit(
     val cid: String? = null
 )
 
+// ── Jetstream client ───────────────────────────────
+
 /**
  * Client for Bluesky's Jetstream protocol, providing a filtered JSON-based firehose.
+ *
+ * Supports collection-level and DID-level filtering, emitting deserialised
+ * [JetstreamEvent] objects as a Kotlin coroutine Flow.
  */
 class JetstreamClient(private val host: String = "jetstream1.us-east.bsky.network") {
     private val client = HttpClient(CIO) {

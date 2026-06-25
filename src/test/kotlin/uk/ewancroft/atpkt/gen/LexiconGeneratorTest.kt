@@ -5,6 +5,8 @@ import uk.ewancroft.atpkt.lexicon.registry.LexiconLoader
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+// Tests for LexiconGenerator — verifies that lexicon JSON files produce
+// valid KotlinPoet FileSpec trees with expected class names and fields.
 class LexiconGeneratorTest {
 
     @Test

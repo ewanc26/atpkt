@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+// Tests for LexiconLoader and LexiconRegistry integration
 class LexiconLoaderTest {
 
     @Test
