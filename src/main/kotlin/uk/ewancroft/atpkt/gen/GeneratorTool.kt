@@ -15,9 +15,6 @@ object GeneratorTool {
     @JvmStatic
     fun main(args: Array<String>) {
         val loader = LexiconLoader
-        val generator = LexiconGenerator
-        
-        // Define directory to store generated classes
         val outputDir = File("src/main/kotlin")
         
         // Load all lexicons from resources
