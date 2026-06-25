@@ -10,9 +10,14 @@ import java.time.Instant
 import java.util.Base64
 import java.util.UUID
 
+// ── DPoP proof generation ──────────────────────────
+
 /**
  * Utility for generating DPoP (Demonstrating Proof-of-Possession) proofs.
- * Mirrors the cryptographic requirements for AT Protocol DPoP (RFC 9449).
+ * Spec: RFC 9449
+ *
+ * Binds OAuth access tokens to the client's key pair, preventing
+ * token theft by requiring proof of possession on every request.
  */
 object DpopProof {
     private val json = Json { 

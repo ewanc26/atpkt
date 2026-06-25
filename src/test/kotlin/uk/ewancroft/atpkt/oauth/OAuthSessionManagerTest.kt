@@ -6,6 +6,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import uk.ewancroft.atpkt.oauth.storage.SessionStore
 
+// Tests for OAuth session persistence and retrieval via SessionStore
 class OAuthSessionManagerTest : DescribeSpec({
     val mockStore = mockk<SessionStore>()
     val mockClient = mockk<OAuthClient>()

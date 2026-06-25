@@ -4,9 +4,12 @@ import com.squareup.kotlinpoet.*
 import uk.ewancroft.atpkt.lexicon.*
 import java.io.File
 
+// ── Full lexicon code generator ────────────────────
+
 /**
  * Extended LexiconGenerator capable of producing the full API surface area.
- */
+ * Still a work-in-progress: the namespace layer and model generation methods
+ * are stubs awaiting the full KotlinPoet wiring.
 class FullLexiconGenerator(private val outputDir: File) {
     
     fun generateAll(schemas: List<LexiconSchema>) {

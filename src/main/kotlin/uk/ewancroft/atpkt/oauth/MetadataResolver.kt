@@ -8,8 +8,12 @@ import kotlinx.serialization.json.Json
 import uk.ewancroft.atpkt.client.AtpHttpClient
 import java.util.concurrent.ConcurrentHashMap
 
+// ── OAuth metadata resolution ──────────────────────
+
 /**
  * Resolves OAuth server metadata (Authorization and Resource servers).
+ * Fetches .well-known documents and caches them with issuer validation.
+ * Spec: https://atproto.com/specs/oauth#discovery
  */
 class MetadataResolver {
     private val client = AtpHttpClient.client

@@ -6,9 +6,14 @@ import uk.ewancroft.atpkt.client.ComAtProtoNS
 import uk.ewancroft.atpkt.client.AppBskyNS
 import uk.ewancroft.atpkt.did.DidResolver
 
+// ── Agent ──────────────────────────────────────────
+
 /**
  * The central agent class for AT Protocol interactions.
  * Inspired by the official TypeScript SDK's Agent architecture.
+ *
+ * Provides namespaced access to com.atproto.* (via agent.com) and
+ * app.bsky.* (via agent.app) endpoints through generated namespace wrappers.
  */
 class Agent(
     val sessionManager: AtProtoSessionManager,

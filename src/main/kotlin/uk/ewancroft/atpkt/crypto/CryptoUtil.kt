@@ -4,6 +4,8 @@ import java.security.*
 import java.security.interfaces.ECPublicKey
 import java.util.Base64
 
+// ── Cryptographic operations ───────────────────────
+
 /**
  * Utility for signing AT Protocol commits.
  * This implementation provides basic ECDSA P-256 signing as required by AT Protocol spec.

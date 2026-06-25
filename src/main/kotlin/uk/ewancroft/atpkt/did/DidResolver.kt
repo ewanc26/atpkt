@@ -9,9 +9,11 @@ import uk.ewancroft.atpkt.client.AtpHttpClient
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
+// ── DID resolution ─────────────────────────────────
+
 /**
  * Resolver for DID/PLC documents with in-memory caching.
- * Uses Ktor for network requests.
+ * Supports did:plc and did:web methods. Uses Ktor for network requests.
  */
 class DidResolver(
     private val plcUrl: String = "https://plc.directory",

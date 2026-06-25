@@ -6,8 +6,11 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.io.InputStream
 import org.slf4j.LoggerFactory
 
+// ── Lexicon file loader ────────────────────────────
+
 /**
- * Utility to load and register AT Protocol Lexicon definitions.
+ * Utility to load and register AT Protocol Lexicon definitions from
+ * JSON resource files bundled with the SDK.
  */
 object LexiconLoader {
     private val logger = LoggerFactory.getLogger("atpmc-lexicon-loader")

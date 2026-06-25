@@ -5,6 +5,8 @@ import kotlinx.serialization.json.*
 import org.slf4j.LoggerFactory
 import java.util.UUID
 
+// ── Record management ──────────────────────────────
+
 /**
  * Comprehensive record management for AT Protocol repositories.
  * Provides type-safe CRUD operations for AT Protocol records.

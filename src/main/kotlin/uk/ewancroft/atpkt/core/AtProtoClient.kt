@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 import uk.ewancroft.atpkt.client.AtpHttpClient
 import uk.ewancroft.atpkt.xrpc.Xrpc
 
+// ── Low-level AT Protocol client ───────────────────
+
 /**
  * Enhanced AT Protocol client using Ktor.
  * Handles identity resolution, authentication, and XRPC requests.

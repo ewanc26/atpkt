@@ -2,10 +2,14 @@ package uk.ewancroft.atpkt.repo.cid
 
 import java.security.MessageDigest
 
+// ── CID computation ────────────────────────────────
+
 /**
  * CID (Content Identifier) utility for hashing objects to verify their contents.
  * AT Protocol uses CIDv1. This implementation aligns with the basic structure:
  * CIDv1 = [version] + [multicodec] + [multihash]
+ *
+ * Spec: https://atproto.com/specs/cid
  */
 object CidUtil {
     

@@ -8,6 +8,8 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
+// ── HTTP client singleton ──────────────────────────
+
 /**
  * Audit Update: Aligned AtpHttpClient with Ktor 3.x standards.
  * - Centralized Json configuration for strict Lexicon adherence.

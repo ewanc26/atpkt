@@ -2,8 +2,11 @@ package uk.ewancroft.atpkt.client
 
 import uk.ewancroft.atpkt.agent.Agent
 
+// ── com.atproto namespace ──────────────────────────
+
 /**
  * Namespaced access for com.atproto.* XRPC endpoints.
+ * Provides thin wrappers around XRPC calls to the relevant PDS.
  */
 class ComAtProtoNS(private val agent: Agent) {
     val repo = ComAtProtoRepoNS(agent)

@@ -5,6 +5,7 @@ import uk.ewancroft.atpkt.lexicon.registry.LexiconLoader
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+// Tests for union type generation from Lexicon schemas
 class UnionGeneratorTest {
 
     @Test

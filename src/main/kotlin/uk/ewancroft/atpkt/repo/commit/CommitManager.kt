@@ -6,6 +6,8 @@ import uk.ewancroft.atpkt.crypto.CryptoUtil
 import java.security.PrivateKey
 import java.security.PublicKey
 
+// ── Commit signing and verification ────────────────
+
 /**
  * Represents an unsigned AT Protocol commit object.
  * Mirrors the `UnsignedCommit` interface from ATProtocol.

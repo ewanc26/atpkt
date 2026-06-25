@@ -8,10 +8,11 @@ import uk.ewancroft.atpkt.lexicon.registry.LexiconRegistry
 import java.io.File
 import java.nio.file.Path
 
+// ── Lexicon-to-Kotlin code generator ───────────────
+
 /**
  * Audit Update: Refactored LexiconGenerator to strictly adhere to KotlinPoet 1.18.x standards.
  * Ensures proper use of FileSpec/TypeSpec builders and safe file writing using NIO Path.
- */
 class LexiconGenerator(private val outputDir: File) {
     private val jsonSerializable = ClassName("kotlinx.serialization", "Serializable")
 

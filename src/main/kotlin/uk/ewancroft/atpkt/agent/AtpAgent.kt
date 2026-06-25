@@ -3,9 +3,14 @@ package uk.ewancroft.atpkt.agent
 import uk.ewancroft.atpkt.core.AtProtoClient
 import uk.ewancroft.atpkt.oauth.OAuthSessionManager
 
+// ── AtpAgent (alternate SDK entry point) ───────────
+
 /**
  * High-level Agent inspired by atproto.blue.
  * Provides a clean entry point with namespaced access to generated APIs.
+ *
+ * This variant uses a flat namespace hierarchy (com.atproto, app.bsky)
+ * rather than the nested Agent architecture — more explicit, less magic.
  */
 class AtpAgent(
     val client: AtProtoClient = AtProtoClient(),

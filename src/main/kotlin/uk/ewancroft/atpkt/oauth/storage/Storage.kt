@@ -1,7 +1,5 @@
 package uk.ewancroft.atpkt.oauth.storage
 
-import uk.ewancroft.atpkt.oauth.dpop.DpopProof
-
 /**
  * Stores transient authorization state during the OAuth flow.
  * Mirrors atproto/packages/oauth/oauth-client/src/state-store.ts

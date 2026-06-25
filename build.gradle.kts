@@ -1,3 +1,6 @@
+// ── atpkt build configuration ──────────────────────
+// AT Protocol SDK for Kotlin — JVM-first, Ktor-based
+
 plugins {
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.serialization") version "2.3.0"
@@ -14,11 +17,18 @@ repositories {
 dependencies {
     val ktorVersion = "3.5.0"
 
+    // Serialisation and async
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+
+    // Logging
     implementation("org.slf4j:slf4j-api:2.0.16")
+
+    // Code generation (KotlinPoet — used by the lexicon generator tool)
     implementation("com.squareup:kotlinpoet:1.18.1")
 
+    // Ktor HTTP client: CIO engine, WebSocket support, content negotiation,
+    // CBOR (for subscription streams) and JSON (for XRPC)
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -31,10 +41,11 @@ dependencies {
 
 kotlin {
     sourceSets.main {
+        // Generated code lives alongside the library source but is excluded
+        // from compilation — the generator output is tracked for reference
         kotlin.exclude("uk/ewancroft/atpkt/generated/**")
     }
 }
-
 
 publishing {
     publications {
@@ -44,13 +55,17 @@ publishing {
     }
 }
 
+// ── Lexicon code generation task ───────────────────
+
 tasks.register<JavaExec>("generateLexiconClasses") {
-    description = "Runs the Lexicon → Kotlin code generator (KotlinPoet AST)."
+    description = "Runs the Lexicon -> Kotlin code generator (KotlinPoet AST)."
     group = "build"
     dependsOn("processResources")
     mainClass.set("uk.ewancroft.atpkt.gen.GeneratorTool")
     classpath = sourceSets.main.get().runtimeClasspath
 }
+
+// ── Test configuration ─────────────────────────────
 
 tasks.test {
     useJUnitPlatform()

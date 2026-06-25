@@ -1,5 +1,5 @@
 {
-  description = "atpkt: A professional-grade, modular ATProtocol SDK for Kotlin.";
+  description = "atpkt: AT Protocol SDK for Kotlin — JVM-first, Ktor-based.";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
