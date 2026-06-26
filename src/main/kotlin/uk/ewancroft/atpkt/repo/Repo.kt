@@ -1,6 +1,8 @@
 package uk.ewancroft.atpkt.repo
 
 import kotlinx.serialization.Serializable
+import uk.ewancroft.atpkt.repo.commit.Commit
+import uk.ewancroft.atpkt.repo.commit.CommitManager
 import uk.ewancroft.atpkt.repo.mst.MstTree
 
 // ── Repository abstraction ─────────────────────────
@@ -21,9 +23,14 @@ data class RepoCommit(
 
 class Repo(
     val did: String,
-    private val mst: MstTree
+    private val mst: MstTree,
+    private val commitManager: CommitManager.Session
 ) {
     fun getRootCid(): String = mst.rootCid()
 
     fun records(): Map<String, String> = mst.asMap()
+
+    fun verifyCommit(commit: Commit): Boolean = commitManager.verify(commit)
+
+    fun createCommit(rev: String, data: String): Commit = commitManager.createCommit(did, rev, data)
 }
