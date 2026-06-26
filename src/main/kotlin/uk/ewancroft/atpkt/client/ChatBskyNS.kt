@@ -1,6 +1,21 @@
 package uk.ewancroft.atpkt.client
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 import uk.ewancroft.atpkt.agent.Agent
+import uk.ewancroft.atpkt.xrpc.Xrpc
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.time.Instant
+
+private fun encodeQuery(value: String): String = URLEncoder.encode(value, StandardCharsets.UTF_8)
+
+private fun buildQueryString(vararg params: Pair<String, String?>): String =
+    params.mapNotNull { (key, value) -> value?.let { "${encodeQuery(key)}=${encodeQuery(it)}" } }
+        .joinToString("&")
+
+private const val DEFAULT_PDS_URL = "https://bsky.social"
 
 class ChatBskyNS(private val agent: Agent) {
     val actor = ChatBskyActorNS(agent)
@@ -17,6 +32,20 @@ class ChatBskyActorNS(private val agent: Agent) {
 }
 
 class ChatBskyConvoNS(private val agent: Agent) {
+    @Serializable
+    data class ChatMessage(
+        @SerialName("\$type")
+        val type: String = "chat.bsky.convo.defs#message",
+        val text: String,
+        val createdAt: String
+    )
+
+    @Serializable
+    data class SendMessageRequest(
+        val convoId: String,
+        val message: ChatMessage
+    )
+
     suspend fun acceptConvo(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun addReaction(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun deleteMessageForSelf(): Result<String> = runCatching { TODO("not yet implemented") }
@@ -25,14 +54,77 @@ class ChatBskyConvoNS(private val agent: Agent) {
     suspend fun getConvoForMembers(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun getConvoMembers(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun getLog(): Result<String> = runCatching { TODO("not yet implemented") }
-    suspend fun getMessages(): Result<String> = runCatching { TODO("not yet implemented") }
+
+    suspend fun getMessages(
+        convoId: String,
+        limit: Int = 50,
+        cursor: String? = null,
+        pdsUrl: String = DEFAULT_PDS_URL,
+        accessJwt: String? = null
+    ): Result<JsonElement> = runCatching {
+        val params = buildQueryString(
+            "convoId" to convoId,
+            "limit" to limit.toString(),
+            "cursor" to cursor
+        )
+        val response = agent.sessionManager.client.xrpcRequest(
+            method = "GET",
+            endpoint = "chat.bsky.convo.getMessages?$params",
+            accessJwt = accessJwt,
+            pdsUrl = pdsUrl
+        ).getOrThrow()
+        Xrpc.json.decodeFromString<JsonElement>(response)
+    }
+
     suspend fun leaveConvo(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun listConvoRequests(): Result<String> = runCatching { TODO("not yet implemented") }
-    suspend fun listConvos(): Result<String> = runCatching { TODO("not yet implemented") }
+
+    suspend fun listConvos(
+        limit: Int = 50,
+        cursor: String? = null,
+        pdsUrl: String = DEFAULT_PDS_URL,
+        accessJwt: String? = null
+    ): Result<JsonElement> = runCatching {
+        val params = buildQueryString(
+            "limit" to limit.toString(),
+            "cursor" to cursor
+        )
+        val response = agent.sessionManager.client.xrpcRequest(
+            method = "GET",
+            endpoint = "chat.bsky.convo.listConvos?$params",
+            accessJwt = accessJwt,
+            pdsUrl = pdsUrl
+        ).getOrThrow()
+        Xrpc.json.decodeFromString<JsonElement>(response)
+    }
+
     suspend fun lockConvo(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun muteConvo(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun removeReaction(): Result<String> = runCatching { TODO("not yet implemented") }
-    suspend fun sendMessage(): Result<String> = runCatching { TODO("not yet implemented") }
+
+    suspend fun sendMessage(
+        convoId: String,
+        text: String,
+        pdsUrl: String = DEFAULT_PDS_URL,
+        accessJwt: String? = null
+    ): Result<JsonElement> = runCatching {
+        val request = SendMessageRequest(
+            convoId = convoId,
+            message = ChatMessage(
+                text = text,
+                createdAt = Instant.now().toString()
+            )
+        )
+        val response = agent.sessionManager.client.xrpcRequest(
+            method = "POST",
+            endpoint = "chat.bsky.convo.sendMessage",
+            accessJwt = accessJwt,
+            pdsUrl = pdsUrl,
+            body = Xrpc.json.encodeToString(SendMessageRequest.serializer(), request)
+        ).getOrThrow()
+        Xrpc.json.decodeFromString<JsonElement>(response)
+    }
+
     suspend fun sendMessageBatch(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun unlockConvo(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun unmuteConvo(): Result<String> = runCatching { TODO("not yet implemented") }
