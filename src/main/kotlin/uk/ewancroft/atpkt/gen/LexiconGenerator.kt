@@ -112,7 +112,7 @@ class LexiconGenerator(private val outputDir: File) {
         @JvmStatic
         fun generateKotlinClass(id: String, outputDir: File = File("src/main/kotlin")): FileSpec? {
             val schemaJson = LexiconRegistry.get(id) ?: return null
-            val schema = json.decodeFromJsonElement<LexiconSchema>(schemaJson)
+            val schema = json.decodeFromJsonElement(LexiconSchema.serializer(), schemaJson)
 
             val packageName = "uk.ewancroft.atpkt.generated.${schema.id.substringBeforeLast(".")}"
             val className = schema.id.substringAfterLast(".").replaceFirstChar { it.uppercase() }
@@ -186,11 +186,9 @@ private fun buildDataClass(
         }
         val nullableType = type.copy(nullable = isNullable)
 
-        constructorBuilder.addParameter(
-            ParameterSpec.builder(kotlinName, nullableType)
-                .defaultValue(if (isNullable) "null" else null)
-                .build()
-        )
+        val paramSpec = ParameterSpec.builder(kotlinName, nullableType)
+        if (isNullable) paramSpec.defaultValue("null")
+        constructorBuilder.addParameter(paramSpec.build())
         builder.addProperty(
             PropertySpec.builder(kotlinName, nullableType)
                 .initializer(kotlinName)
