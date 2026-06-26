@@ -1,16 +1,13 @@
 package uk.ewancroft.atpkt.repo
 
-import uk.ewancroft.atpkt.repo.mst.MstNode
 import kotlinx.serialization.Serializable
+import uk.ewancroft.atpkt.repo.mst.MstTree
 
 // ── Repository abstraction ─────────────────────────
 
 /**
  * High-level repository abstraction.
- * Mirroring official ATProtocol 'Repo' class structure.
- *
- * A Repo wraps a Merkle Search Tree (MST) that stores the user's
- * collection records as CID-addressed blocks.
+ * A repository wraps an MST that stores record CIDs by path.
  */
 @Serializable
 data class RepoCommit(
@@ -18,14 +15,15 @@ data class RepoCommit(
     val version: Int = 3,
     val rev: String,
     val prev: String?,
-    val data: String // Root CID of the MST
+    val data: String,
+    val sig: ByteArray? = null
 )
 
 class Repo(
     val did: String,
-    private val mst: MstNode
+    private val mst: MstTree
 ) {
-    fun getRootCid(): String = mst.computeRootCid()
-    
-    // Future: commit operations, MST diffing, and block-map management.
+    fun getRootCid(): String = mst.rootCid()
+
+    fun records(): Map<String, String> = mst.asMap()
 }

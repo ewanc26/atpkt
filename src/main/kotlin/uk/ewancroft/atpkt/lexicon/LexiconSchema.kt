@@ -33,7 +33,19 @@ data class LexiconDefinition(
     val required: List<String>? = null,
     val parameters: LexiconParameters? = null,
     val input: LexiconBody? = null,
-    val output: LexiconBody? = null
+    val output: LexiconBody? = null,
+    val record: LexiconRecord? = null
+)
+
+/**
+ * A record payload nested inside a Lexicon definition.
+ */
+@Serializable
+data class LexiconRecord(
+    val type: String,
+    val description: String? = null,
+    val properties: Map<String, LexiconProperty>? = null,
+    val required: List<String>? = null
 )
 
 /**
