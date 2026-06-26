@@ -32,10 +32,8 @@ class AtpAgent(
         return oauth.refreshToken(refreshToken, clientId, tokenEndpoint, dpopKeyPair)
     }
 
-    suspend fun logout(did: String): Result<Unit> {
-        return runCatching {
-            sessions?.deleteSession(did)
-        }
+    suspend fun logout(did: String): Result<Unit> = runCatching {
+        sessions?.sessionStore?.del(did)
     }
 
     suspend fun isLoggedIn(did: String): Boolean {

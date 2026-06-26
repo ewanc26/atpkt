@@ -30,7 +30,7 @@ data class SerializedKeyPair(
 
 class OAuthSessionManager(
     private val oauthClient: OAuthClient,
-    private val sessionStore: SessionStore
+    val sessionStore: SessionStore
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 

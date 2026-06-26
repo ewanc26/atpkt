@@ -3,7 +3,6 @@ package uk.ewancroft.atpkt.agent
 import uk.ewancroft.atpkt.core.AtProtoClient
 import uk.ewancroft.atpkt.core.AtProtoSessionManager
 import uk.ewancroft.atpkt.client.AppBskyNS
-import uk.ewancroft.atpkt.client.ChatBskyNS
 import uk.ewancroft.atpkt.client.ComAtProtoNS
 import uk.ewancroft.atpkt.client.ToolsNS
 import uk.ewancroft.atpkt.did.DidResolver
@@ -24,7 +23,6 @@ class Agent(
 ) {
     val com = ComAtProtoNS(this)
     val app = AppBskyNS(this)
-    val chat = ChatBskyNS(this)
     val tools = ToolsNS(this)
 
     /**
