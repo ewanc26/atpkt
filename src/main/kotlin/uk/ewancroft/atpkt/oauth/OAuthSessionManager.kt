@@ -1,11 +1,13 @@
 package uk.ewancroft.atpkt.oauth
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import uk.ewancroft.atpkt.crypto.CryptoUtil
+import uk.ewancroft.atpkt.oauth.storage.ListableSessionStore
 import uk.ewancroft.atpkt.oauth.storage.SessionStore
-import java.security.KeyPair
 import java.security.KeyFactory
+import java.security.KeyPair
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
@@ -49,7 +51,7 @@ class OAuthSessionManager(
         val refreshToken = session.refreshToken ?: throw Exception("No refresh token available")
 
         val keyPair = deserializeKeyPair(session.dpopKeyPairSerialized)
-        
+
         val tokenResponse = oauthClient.refreshToken(
             refreshToken = refreshToken,
             clientId = session.clientId,
@@ -65,6 +67,21 @@ class OAuthSessionManager(
         saveSession(updatedSession)
         updatedSession
     }
+
+    suspend fun deleteSession(did: String) {
+        sessionStore.del(did)
+    }
+
+    suspend fun sessionExists(did: String): Boolean = getSession(did) != null
+
+    suspend fun listSessions(): List<String> = (sessionStore as? ListableSessionStore)?.list().orEmpty()
+
+    fun serializeKeyPair(keyPair: KeyPair): SerializedKeyPair = SerializedKeyPair(
+        publicKey = Base64.getEncoder().encodeToString(keyPair.public.encoded),
+        privateKey = Base64.getEncoder().encodeToString(keyPair.private.encoded)
+    )
+
+    fun generateKeyPair(): SerializedKeyPair = serializeKeyPair(CryptoUtil.generateKeyPair())
 
     private fun deserializeKeyPair(serialized: SerializedKeyPair): KeyPair {
         val kf = KeyFactory.getInstance("EC")

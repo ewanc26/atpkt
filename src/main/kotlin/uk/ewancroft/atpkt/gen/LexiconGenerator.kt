@@ -127,17 +127,17 @@ class LexiconGenerator(private val outputDir: File) {
                 when (definition.type) {
                     "record", "object" -> {
                         val typeName = if (defName == "main") className else defName.replaceFirstChar { it.uppercase() }
-                        generatedTypes.add(buildDataClass(typeName, definition, packageName, jsonSerializable))
+                        generatedTypes.add(buildDataClass(typeName, definition, packageName, jsonSerializable, fileBuilder))
                     }
                     "query", "procedure" -> {
                         val typeName = defName.replaceFirstChar { it.uppercase() }
                         definition.input?.schema?.let {
                             generatedTypes.add(buildDataClass("${typeName}Input",
-                                LexiconDefinition("object", properties = mapOf("body" to it)), packageName, jsonSerializable))
+                                LexiconDefinition("object", properties = mapOf("body" to it)), packageName, jsonSerializable, fileBuilder))
                         }
                         definition.output?.schema?.let {
                             generatedTypes.add(buildDataClass("${typeName}Output",
-                                LexiconDefinition("object", properties = mapOf("body" to it)), packageName, jsonSerializable))
+                                LexiconDefinition("object", properties = mapOf("body" to it)), packageName, jsonSerializable, fileBuilder))
                         }
                     }
                 }
@@ -157,32 +157,43 @@ private fun buildDataClass(
     definition: LexiconDefinition,
     packageName: String,
     jsonSerializable: ClassName,
+    fileBuilder: FileSpec.Builder,
 ): TypeSpec {
     val builder = TypeSpec.classBuilder(name)
         .addAnnotation(jsonSerializable)
         .addModifiers(KModifier.DATA)
 
     val constructorBuilder = FunSpec.constructorBuilder()
-    val props = definition.properties ?: emptyMap()
+    val props = definition.effectiveProperties()
+    val required = definition.effectiveRequired()
     val jsonElement = ClassName("kotlinx.serialization.json", "JsonElement")
 
-    if (props.isEmpty()) return builder.build()
+    if (props.isNullOrEmpty()) return builder.build()
 
     props.forEach { (propName, property) ->
         val kotlinName = if (propName in KOTLIN_KEYWORDS) "`$propName`" else propName
-        val isNullable = !(definition.required?.contains(propName) ?: false)
+        val isNullable = !(required?.contains(propName) ?: false)
 
-        // Map type
-        val type: TypeName = if (property.ref != null) {
-            STRING // external refs mapped to String
-        } else when (property.type) {
-            "string" -> STRING
-            "integer" -> INT
-            "boolean" -> BOOLEAN
-            "bytes", "unknown", "object", "union" -> jsonElement
-            "array" -> LIST.parameterizedBy(jsonElement)
-            "cid-link" -> STRING
-            else -> jsonElement
+        val type: TypeName = when {
+            property.ref != null -> STRING
+            property.type == "union" -> {
+                val unionTypeName = "${name}${propName.replaceFirstChar { it.uppercase() }}Union"
+                val unionType = TypeSpec.interfaceBuilder(unionTypeName)
+                    .addAnnotation(jsonSerializable)
+                    .addModifiers(KModifier.SEALED)
+                    .build()
+                fileBuilder.addType(unionType)
+                ClassName(packageName, unionTypeName)
+            }
+            else -> when (property.type) {
+                "string" -> STRING
+                "integer" -> INT
+                "boolean" -> BOOLEAN
+                "bytes", "unknown", "object" -> jsonElement
+                "array" -> LIST.parameterizedBy(jsonElement)
+                "cid-link" -> STRING
+                else -> jsonElement
+            }
         }
         val nullableType = type.copy(nullable = isNullable)
 
@@ -198,6 +209,10 @@ private fun buildDataClass(
 
     return builder.primaryConstructor(constructorBuilder.build()).build()
 }
+
+private fun LexiconDefinition.effectiveProperties(): Map<String, LexiconProperty>? = properties ?: record?.properties
+
+private fun LexiconDefinition.effectiveRequired(): List<String>? = required ?: record?.required
 
 private val KOTLIN_KEYWORDS = setOf(
     "package", "as", "break", "class", "continue", "do", "else", "false",
