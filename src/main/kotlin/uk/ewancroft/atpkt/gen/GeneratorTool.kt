@@ -37,9 +37,9 @@ object GeneratorTool {
         
         LexiconRegistry.getAllIds().forEach { id ->
             try {
-                val fileSpec = generator.generateKotlinClass(id)
+                val fileSpec = LexiconGenerator.generateKotlinClass(id, outputDir)
                 if (fileSpec != null) {
-                    fileSpec.writeTo(outputDir)
+                    fileSpec.writeTo(outputDir.toPath())
                 }
             } catch (e: Exception) {
                 println("Failed to generate class for $id: ${e.message}")
