@@ -14,6 +14,7 @@ import kotlin.io.path.isDirectory
  * CLI entry point for the code generator.
  * Walks the lexicon resource files, registers them, then generates
  * corresponding Kotlin data classes via KotlinPoet.
+ */
 object GeneratorTool {
     @JvmStatic
     fun main(args: Array<String>) {
