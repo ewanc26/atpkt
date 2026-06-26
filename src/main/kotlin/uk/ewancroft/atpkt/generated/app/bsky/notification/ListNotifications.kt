@@ -10,7 +10,8 @@ import uk.ewancroft.atpkt.generated.com.atproto.label.Label
 
 @Serializable
 public data class ListNotificationsOutput(
-  public val unused: String? = null,
+  public val notifications: List<Notification>,
+  public val cursor: String? = null,
 )
 
 @Serializable
