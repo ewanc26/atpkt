@@ -1,6 +1,18 @@
 package uk.ewancroft.atpkt.client
 
+import kotlinx.serialization.json.JsonElement
 import uk.ewancroft.atpkt.agent.Agent
+import uk.ewancroft.atpkt.xrpc.Xrpc
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
+private fun encodeQuery(value: String): String = URLEncoder.encode(value, StandardCharsets.UTF_8)
+
+private fun buildQueryString(vararg params: Pair<String, String?>): String =
+    params.mapNotNull { (key, value) -> value?.let { "${encodeQuery(key)}=${encodeQuery(it)}" } }
+        .joinToString("&")
+
+private const val DEFAULT_PDS_URL = "https://bsky.social"
 
 class ToolsOzoneNS(private val agent: Agent) {
     val communication = ToolsOzoneCommunicationNS(agent)
@@ -35,7 +47,22 @@ class ToolsOzoneModerationNS(private val agent: Agent) {
     suspend fun getEvent(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun getRecord(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun getRecords(): Result<String> = runCatching { TODO("not yet implemented") }
-    suspend fun getRepo(): Result<String> = runCatching { TODO("not yet implemented") }
+
+    suspend fun getRepo(
+        did: String,
+        pdsUrl: String = DEFAULT_PDS_URL,
+        accessJwt: String? = null
+    ): Result<JsonElement> = runCatching {
+        val params = buildQueryString("did" to did)
+        val response = agent.sessionManager.client.xrpcRequest(
+            method = "GET",
+            endpoint = "tools.ozone.moderation.getRepo?$params",
+            accessJwt = accessJwt,
+            pdsUrl = pdsUrl
+        ).getOrThrow()
+        Xrpc.json.decodeFromString<JsonElement>(response)
+    }
+
     suspend fun getReporterStats(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun getRepos(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun getSubjects(): Result<String> = runCatching { TODO("not yet implemented") }
@@ -43,7 +70,27 @@ class ToolsOzoneModerationNS(private val agent: Agent) {
     suspend fun queryEvents(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun queryStatuses(): Result<String> = runCatching { TODO("not yet implemented") }
     suspend fun scheduleAction(): Result<String> = runCatching { TODO("not yet implemented") }
-    suspend fun searchRepos(): Result<String> = runCatching { TODO("not yet implemented") }
+
+    suspend fun searchRepos(
+        term: String,
+        limit: Int = 25,
+        cursor: String? = null,
+        pdsUrl: String = DEFAULT_PDS_URL,
+        accessJwt: String? = null
+    ): Result<JsonElement> = runCatching {
+        val params = buildQueryString(
+            "term" to term,
+            "limit" to limit.toString(),
+            "cursor" to cursor
+        )
+        val response = agent.sessionManager.client.xrpcRequest(
+            method = "GET",
+            endpoint = "tools.ozone.moderation.searchRepos?$params",
+            accessJwt = accessJwt,
+            pdsUrl = pdsUrl
+        ).getOrThrow()
+        Xrpc.json.decodeFromString<JsonElement>(response)
+    }
 }
 
 class ToolsOzoneQueueNS(private val agent: Agent) {
@@ -81,7 +128,16 @@ class ToolsOzoneSafelinkNS(private val agent: Agent) {
 }
 
 class ToolsOzoneServerNS(private val agent: Agent) {
-    suspend fun getConfig(): Result<String> = runCatching { TODO("not yet implemented") }
+    suspend fun getConfig(
+        pdsUrl: String = DEFAULT_PDS_URL
+    ): Result<JsonElement> = runCatching {
+        val response = agent.sessionManager.client.xrpcRequest(
+            method = "GET",
+            endpoint = "tools.ozone.server.getConfig",
+            pdsUrl = pdsUrl
+        ).getOrThrow()
+        Xrpc.json.decodeFromString<JsonElement>(response)
+    }
 }
 
 class ToolsOzoneSetNS(private val agent: Agent) {

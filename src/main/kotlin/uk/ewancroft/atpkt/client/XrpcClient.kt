@@ -5,8 +5,13 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import uk.ewancroft.atpkt.xrpc.Xrpc
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 // ── XRPC client ────────────────────────────────────
 
@@ -17,70 +22,80 @@ import uk.ewancroft.atpkt.xrpc.Xrpc
  * Handles the wire protocol: serialises query/procedure calls, attaches
  * auth headers, and deserialises responses or error envelopes.
  */
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 class XrpcClient(
     val pdsUrl: String = "https://bsky.social",
     private val httpClient: HttpClient = AtpHttpClient.client
 ) {
     private val json = Xrpc.json
 
-    suspend fun <T : Any, R : Any> query(
+    suspend inline fun <reified T : Any, reified R : Any> query(
         nsid: String,
         params: T? = null,
-        responseSerializer: kotlinx.serialization.KSerializer<R>,
         accessJwt: String? = null
     ): R {
         val url = buildUrl(nsid, params)
         val response = httpClient.get(url) {
             accessJwt?.let { header(HttpHeaders.Authorization, "Bearer $it") }
         }
-        return handleResponse(response, responseSerializer)
+        return handleResponse(response)
     }
 
-    suspend fun <T : Any, R : Any> procedure(
+    suspend inline fun <reified T : Any, reified R : Any> procedure(
         nsid: String,
         body: T,
-        requestSerializer: kotlinx.serialization.KSerializer<T>,
-        responseSerializer: kotlinx.serialization.KSerializer<R>,
         accessJwt: String? = null
     ): R {
         val url = "$pdsUrl/xrpc/$nsid"
         val response = httpClient.post(url) {
             contentType(ContentType.Application.Json)
             accessJwt?.let { header(HttpHeaders.Authorization, "Bearer $it") }
-            setBody(json.encodeToString(requestSerializer, body))
+            setBody(json.encodeToString(body))
         }
-        return handleResponse(response, responseSerializer)
+        return handleResponse(response)
     }
 
-    private suspend fun <R : Any> handleResponse(
-        response: HttpResponse,
-        serializer: kotlinx.serialization.KSerializer<R>
+    private suspend inline fun <reified R : Any> handleResponse(
+        response: HttpResponse
     ): R {
         val bodyText = response.bodyAsText()
         if (!response.status.isSuccess()) {
             val error = try {
                 json.decodeFromString<Xrpc.XrpcError>(bodyText)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Xrpc.XrpcError("UnknownError", bodyText)
             }
             throw Exception("XRPC Error: ${error.error} - ${error.message}")
         }
-        return json.decodeFromString(serializer, bodyText)
+        return json.decodeFromString<R>(bodyText)
     }
 
-    private fun <T : Any> buildUrl(nsid: String, params: T?): String {
+    @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+    private inline fun <reified T : Any> buildUrl(nsid: String, params: T?): String {
         val baseUrl = "$pdsUrl/xrpc/$nsid"
         if (params == null) return baseUrl
-        
-        // Simple parameter serialization for low-level client
-        // In a full implementation, this would use a dedicated Lexicon parameter encoder
-        val queryString = json.encodeToJsonElement(
-            @Suppress("UNCHECKED_CAST") 
-            (Json.serializersModule.getContextual(params::class) as? kotlinx.serialization.KSerializer<T>) 
-            ?: throw Exception("Serializer not found for params"), 
-            params
-        ).let { /* convert JsonElement to query string */ "" } 
-        
-        return if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
+
+        val queryElement = json.parseToJsonElement(json.encodeToString(params))
+        val queryPairs = queryElement.toQueryPairs()
+        if (queryPairs.isEmpty()) return baseUrl
+
+        val queryString = queryPairs.joinToString("&") { (key, value) ->
+            "${encodeQueryComponent(key)}=${encodeQueryComponent(value)}"
+        }
+        return "$baseUrl?$queryString"
     }
+
+    private fun JsonElement.toQueryPairs(prefix: String? = null): List<Pair<String, String>> = when (this) {
+        is JsonObject -> entries.flatMap { (key, value) ->
+            val nextPrefix = if (prefix.isNullOrBlank()) key else "$prefix.$key"
+            value.toQueryPairs(nextPrefix)
+        }
+        is kotlinx.serialization.json.JsonArray -> flatMap { value -> value.toQueryPairs(prefix) }
+        is JsonPrimitive -> if (prefix.isNullOrBlank()) emptyList() else listOf(prefix to content)
+        JsonNull -> emptyList()
+        else -> emptyList()
+    }
+
+    private fun encodeQueryComponent(value: String): String =
+        URLEncoder.encode(value, StandardCharsets.UTF_8)
 }
