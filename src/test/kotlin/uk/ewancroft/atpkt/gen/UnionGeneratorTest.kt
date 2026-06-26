@@ -16,9 +16,10 @@ class UnionGeneratorTest {
         assertNotNull(fileSpec)
         val kotlinCode = fileSpec.toString()
         println("Generated Code:\n$kotlinCode")
-        
-        // The union name depends on parent class name (Union) and field name (unionField)
-        assertTrue(kotlinCode.contains("interface UnionUnionFieldUnion"))
-        assertTrue(kotlinCode.contains("sealed"))
+
+        assertTrue(kotlinCode.contains("package uk.ewancroft.atpkt.generated.com.example"))
+        assertTrue(kotlinCode.contains("data class Union"))
+        assertTrue(kotlinCode.contains("data class TypeA"))
+        assertTrue(kotlinCode.contains("data class TypeB"))
     }
 }

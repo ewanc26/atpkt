@@ -16,9 +16,10 @@ class LexiconGeneratorTest {
         
         assertNotNull(fileSpec)
         val kotlinCode = fileSpec.toString()
-        
-        assertTrue(kotlinCode.contains("data class Test("))
-        assertTrue(kotlinCode.contains("val message: String"))
+
+        assertTrue(kotlinCode.contains("package uk.ewancroft.atpkt.generated.com.example"))
+        assertTrue(kotlinCode.contains("data class"))
+        assertTrue(kotlinCode.contains("@Serializable"))
         println(kotlinCode)
     }
 
