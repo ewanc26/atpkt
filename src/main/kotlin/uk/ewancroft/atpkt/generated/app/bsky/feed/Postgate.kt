@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 public data class Postgate(
   public val unused: String? = null,
 )
-
 @Serializable
-public data class DisableRule()
+public data class DisableRule(
+  public val unused: String? = null,
+)

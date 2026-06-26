@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class SendNotificationInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class SendNotificationOutput(
   public val unused: String? = null,

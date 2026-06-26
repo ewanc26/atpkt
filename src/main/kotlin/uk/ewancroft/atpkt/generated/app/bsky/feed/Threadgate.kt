@@ -7,17 +7,19 @@ import kotlinx.serialization.Serializable
 public data class Threadgate(
   public val unused: String? = null,
 )
-
 @Serializable
-public data class MentionRule()
-
+public data class MentionRule(
+  public val unused: String? = null,
+)
 @Serializable
-public data class FollowerRule()
-
+public data class FollowerRule(
+  public val unused: String? = null,
+)
 @Serializable
-public data class FollowingRule()
-
+public data class FollowingRule(
+  public val unused: String? = null,
+)
 @Serializable
 public data class ListRule(
-  public val list: String? = null,
+  public val unused: String? = null,
 )

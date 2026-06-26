@@ -7,37 +7,29 @@ import kotlinx.serialization.Serializable
 public data class GetAccountHistoryOutput(
   public val unused: String? = null,
 )
-
 @Serializable
 public sealed interface DetailsUnion
-
 @Serializable
 public data class Event(
-  public val details: DetailsUnion? = null,
-  public val createdBy: String? = null,
-  public val createdAt: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
 public data class AccountCreated(
-  public val email: String? = null,
-  public val handle: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
 public data class EmailUpdated(
-  public val email: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
 public data class EmailConfirmed(
-  public val email: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
-public data class PasswordUpdated()
-
+public data class PasswordUpdated(
+  public val unused: String? = null,
+)
 @Serializable
 public data class HandleUpdated(
-  public val handle: String? = null,
+  public val unused: String? = null,
 )

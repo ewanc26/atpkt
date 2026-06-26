@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class CreateJoinLinkInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class CreateJoinLinkOutput(
   public val unused: String? = null,

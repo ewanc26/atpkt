@@ -1,14 +1,11 @@
 package uk.ewancroft.atpkt.generated
 
+import kotlin.String
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Union(
-  public val unionField: UnionFieldUnion,
+  public val unused: String? = null,
 )
-
-@Serializable
-public sealed interface UnionFieldUnion
-
 @Serializable
 public sealed interface UnionFieldUnion

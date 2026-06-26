@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class CreateDraftInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class CreateDraftOutput(
   public val unused: String? = null,

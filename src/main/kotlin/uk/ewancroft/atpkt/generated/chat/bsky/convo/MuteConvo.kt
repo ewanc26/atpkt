@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class MuteConvoInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class MuteConvoOutput(
   public val unused: String? = null,

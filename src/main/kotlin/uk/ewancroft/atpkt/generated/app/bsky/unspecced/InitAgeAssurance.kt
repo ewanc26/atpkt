@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class InitAgeAssuranceInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class InitAgeAssuranceOutput(
   public val unused: String? = null,

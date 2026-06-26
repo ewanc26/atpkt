@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class AssignModeratorInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class AssignModeratorOutput(
   public val unused: String? = null,

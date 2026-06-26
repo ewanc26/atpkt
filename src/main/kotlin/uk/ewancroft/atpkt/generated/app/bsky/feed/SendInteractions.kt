@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class SendInteractionsInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class SendInteractionsOutput(
   public val unused: String? = null,

@@ -7,8 +7,7 @@ import kotlinx.serialization.Serializable
 public data class ListReposByCollectionOutput(
   public val unused: String? = null,
 )
-
 @Serializable
-public data class Repo(
-  public val did: String? = null,
+public data class ListReposByCollectionRepo(
+  public val unused: String? = null,
 )

@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UpdateQueueInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UpdateQueueOutput(
   public val unused: String? = null,

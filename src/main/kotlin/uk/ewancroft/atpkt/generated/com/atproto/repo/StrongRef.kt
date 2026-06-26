@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class StrongRef(
-  public val uri: String? = null,
-  public val cid: String? = null,
+  public val unused: String? = null,
 )

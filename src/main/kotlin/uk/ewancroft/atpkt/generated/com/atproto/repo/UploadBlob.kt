@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UploadBlobInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UploadBlobOutput(
   public val unused: String? = null,

@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UpsertSetInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UpsertSetOutput(
   public val unused: String? = null,

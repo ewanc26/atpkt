@@ -5,11 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Contributor(
-  public val did: String? = null,
-  public val displayName: String? = null,
-  public val role: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
 public data class Document(
   public val unused: String? = null,

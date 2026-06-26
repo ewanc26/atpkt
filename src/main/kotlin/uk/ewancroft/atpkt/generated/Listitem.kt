@@ -5,7 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Listitem(
-  public val subject: String,
-  public val list: String,
-  public val createdAt: String,
+  public val unused: String? = null,
 )

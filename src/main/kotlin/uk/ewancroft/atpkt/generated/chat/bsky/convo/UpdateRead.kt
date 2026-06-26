@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UpdateReadInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UpdateReadOutput(
   public val unused: String? = null,

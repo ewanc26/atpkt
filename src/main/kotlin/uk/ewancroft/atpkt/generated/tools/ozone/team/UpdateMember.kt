@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UpdateMemberInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UpdateMemberOutput(
   public val unused: String? = null,

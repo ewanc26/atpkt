@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class DeleteSetInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class DeleteSetOutput(
   public val unused: String? = null,

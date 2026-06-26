@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class RemoveMembersInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class RemoveMembersOutput(
   public val unused: String? = null,

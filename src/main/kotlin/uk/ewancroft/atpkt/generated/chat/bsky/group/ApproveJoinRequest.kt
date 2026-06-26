@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class ApproveJoinRequestInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class ApproveJoinRequestOutput(
   public val unused: String? = null,

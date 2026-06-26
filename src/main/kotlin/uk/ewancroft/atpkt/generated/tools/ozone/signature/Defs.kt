@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class SigDetail(
-  public val `property`: String? = null,
-  public val `value`: String? = null,
+  public val unused: String? = null,
 )

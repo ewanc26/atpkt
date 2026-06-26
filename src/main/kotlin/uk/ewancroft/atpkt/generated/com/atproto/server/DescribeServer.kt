@@ -7,14 +7,11 @@ import kotlinx.serialization.Serializable
 public data class DescribeServerOutput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class Links(
-  public val privacyPolicy: String? = null,
-  public val termsOfService: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
 public data class Contact(
-  public val email: String? = null,
+  public val unused: String? = null,
 )
