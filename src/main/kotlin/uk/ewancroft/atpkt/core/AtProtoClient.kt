@@ -4,6 +4,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import uk.ewancroft.atpkt.client.AtpHttpClient
 import uk.ewancroft.atpkt.xrpc.Xrpc
 
@@ -47,7 +50,11 @@ class AtProtoClient(
         if (!response.status.isSuccess()) {
             val responseBody = response.bodyAsText()
             val error = try {
-                Xrpc.json.decodeFromString<Xrpc.XrpcError>(responseBody)
+                val errorJson = Xrpc.json.decodeFromString<JsonObject>(responseBody)
+                Xrpc.XrpcError(
+                    error = errorJson["error"]?.jsonPrimitive?.content ?: "unknown",
+                    message = errorJson["message"]?.jsonPrimitive?.content ?: responseBody
+                )
             } catch (e: Exception) {
                 Xrpc.XrpcError("unknown", responseBody)
             }

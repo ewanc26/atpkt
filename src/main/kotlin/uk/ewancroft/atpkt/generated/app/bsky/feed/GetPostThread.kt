@@ -1,9 +1,10 @@
 package uk.ewancroft.atpkt.generated.app.bsky.feed
 
-import kotlin.String
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 public data class GetPostThreadOutput(
-  public val unused: String? = null,
+  public val thread: JsonElement,
+  public val threadgate: ThreadgateView? = null,
 )

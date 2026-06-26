@@ -5,14 +5,19 @@ import kotlin.String
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class Union
+public data class Union(
+  public val unionField: UnionUnionFieldUnion,
+)
 
 @Serializable
 public data class TypeA(
-  public val fieldA: String? = null,
+  public val fieldA: String,
 )
 
 @Serializable
 public data class TypeB(
-  public val fieldB: String? = null,
+  public val fieldB: String,
 )
+
+@Serializable
+public sealed interface UnionUnionFieldUnion
