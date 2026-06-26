@@ -1,7 +1,10 @@
 package uk.ewancroft.atpkt.agent
 
 import uk.ewancroft.atpkt.core.AtProtoClient
+import uk.ewancroft.atpkt.oauth.OAuthClient
 import uk.ewancroft.atpkt.oauth.OAuthSessionManager
+import uk.ewancroft.atpkt.oauth.TokenResponse
+import java.security.KeyPair
 
 // ── AtpAgent (alternate SDK entry point) ───────────
 
@@ -14,8 +17,30 @@ import uk.ewancroft.atpkt.oauth.OAuthSessionManager
  */
 class AtpAgent(
     val client: AtProtoClient = AtProtoClient(),
-    val sessions: OAuthSessionManager? = null
+    val sessions: OAuthSessionManager? = null,
+    val oauth: OAuthClient = OAuthClient()
 ) {
+    suspend fun prepareAuthorization(identifier: String, clientId: String, redirectUri: String): Result<OAuthClient.AuthorizationRequest> {
+        return oauth.prepareAuthorization(identifier, clientId, redirectUri)
+    }
+
+    suspend fun exchangeCode(code: String, request: OAuthClient.AuthorizationRequest): Result<TokenResponse> {
+        return oauth.exchangeCode(code, request)
+    }
+
+    suspend fun refreshToken(refreshToken: String, clientId: String, tokenEndpoint: String, dpopKeyPair: KeyPair): Result<TokenResponse> {
+        return oauth.refreshToken(refreshToken, clientId, tokenEndpoint, dpopKeyPair)
+    }
+
+    suspend fun logout(did: String): Result<Unit> {
+        return runCatching {
+            sessions?.deleteSession(did)
+        }
+    }
+
+    suspend fun isLoggedIn(did: String): Boolean {
+        return sessions?.getSession(did) != null
+    }
     /**
      * Namespaces are populated by generated code.
      * Example: agent.com.atproto.repo.createRecord(...)
