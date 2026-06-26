@@ -19,3 +19,10 @@ interface SessionStore {
     suspend fun set(key: String, value: String)
     suspend fun del(key: String)
 }
+
+/**
+ * Optional capability for stores that can enumerate known session identifiers.
+ */
+interface ListableSessionStore : SessionStore {
+    suspend fun list(): List<String>
+}

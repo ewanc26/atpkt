@@ -31,9 +31,17 @@ data class LexiconDefinition(
     val description: String? = null,
     val properties: Map<String, LexiconProperty>? = null,
     val required: List<String>? = null,
+    val record: LexiconNestedObject? = null,
     val parameters: LexiconParameters? = null,
     val input: LexiconBody? = null,
     val output: LexiconBody? = null
+)
+
+@Serializable
+data class LexiconNestedObject(
+    val type: String? = null,
+    val properties: Map<String, LexiconProperty>? = null,
+    val required: List<String>? = null
 )
 
 /**
@@ -47,7 +55,8 @@ data class LexiconProperty(
     val format: String? = null,
     val maxLength: Int? = null,
     val minLength: Int? = null,
-    val ref: String? = null
+    val ref: String? = null,
+    val refs: List<String>? = null
 )
 
 /**
