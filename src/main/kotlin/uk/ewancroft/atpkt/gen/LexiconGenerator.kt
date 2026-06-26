@@ -163,34 +163,60 @@ private fun buildDataClass(
         .addModifiers(KModifier.DATA)
 
     val constructorBuilder = FunSpec.constructorBuilder()
-    val props = definition.properties ?: emptyMap()
+    val props = definition.properties ?: definition.record?.properties ?: emptyMap()
     val jsonElement = ClassName("kotlinx.serialization.json", "JsonElement")
 
     if (props.isEmpty()) return builder.build()
 
     props.forEach { (propName, property) ->
         val kotlinName = if (propName in KOTLIN_KEYWORDS) "`$propName`" else propName
-        val isNullable = !(definition.required?.contains(propName) ?: false)
+        val required = (definition.required ?: definition.record?.required)?.contains(propName) ?: false
 
-        // Map type
-        val type: TypeName = if (property.ref != null) {
-            STRING // external refs mapped to String
-        } else when (property.type) {
-            "string" -> STRING
-            "integer" -> INT
-            "boolean" -> BOOLEAN
-            "bytes", "unknown", "object", "union" -> jsonElement
-            "array" -> LIST.parameterizedBy(jsonElement)
-            "cid-link" -> STRING
-            else -> jsonElement
+        val type: TypeName = when {
+            property.type == "union" -> {
+                val unionTypeName = "${name}${propName.replaceFirstChar { it.uppercase() }}Union"
+                builder.addType(
+                    TypeSpec.interfaceBuilder(unionTypeName)
+                        .addModifiers(KModifier.SEALED)
+                        .build()
+                )
+                ClassName(packageName, name, unionTypeName)
+            }
+            property.ref != null -> STRING
+            else -> when (property.type) {
+                "string" -> STRING
+                "integer" -> INT
+                "boolean" -> BOOLEAN
+                "bytes", "unknown", "object" -> jsonElement
+                "array" -> LIST.parameterizedBy(jsonElement)
+                "cid-link" -> STRING
+                else -> jsonElement
+            }
         }
-        val nullableType = type.copy(nullable = isNullable)
 
-        val paramSpec = ParameterSpec.builder(kotlinName, nullableType)
-        if (isNullable) paramSpec.defaultValue("null")
+        val finalType = when {
+            required -> type
+            property.type == "string" -> type
+            property.type == "integer" || property.type == "boolean" -> type
+            property.type == "array" -> type
+            else -> type.copy(nullable = true)
+        }
+
+        val paramSpec = ParameterSpec.builder(kotlinName, finalType)
+        val defaultValue = when {
+            required -> null
+            property.type == "string" -> "\"\""
+            property.type == "integer" -> "0"
+            property.type == "boolean" -> "false"
+            property.type == "array" -> "emptyList()"
+            else -> "null"
+        }
+        if (defaultValue != null) {
+            paramSpec.defaultValue(defaultValue)
+        }
         constructorBuilder.addParameter(paramSpec.build())
         builder.addProperty(
-            PropertySpec.builder(kotlinName, nullableType)
+            PropertySpec.builder(kotlinName, finalType)
                 .initializer(kotlinName)
                 .build()
         )
