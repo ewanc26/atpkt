@@ -46,9 +46,17 @@ dependencies {
 
 kotlin {
     sourceSets.main {
-        // Generated code lives alongside the library source but is excluded
-        // from compilation — the generator output is tracked for reference
+        // Keep the bulk of the generated tree out of compilation, but re-add
+        // the generated packages that back the public API surface.
         kotlin.exclude("uk/ewancroft/atpkt/generated/**")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/app/bsky/actor")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/app/bsky/feed")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/app/bsky/graph")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/app/bsky/notification")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/app/bsky/richtext")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/com/atproto/label")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/com/atproto/repo")
+        kotlin.srcDir("src/main/kotlin/uk/ewancroft/atpkt/generated/com/atproto/server")
     }
 }
 

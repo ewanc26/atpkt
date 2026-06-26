@@ -6,6 +6,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import uk.ewancroft.atpkt.xrpc.Xrpc
 
 // ── XRPC client ────────────────────────────────────
@@ -59,7 +62,11 @@ class XrpcClient(
         val bodyText = response.bodyAsText()
         if (!response.status.isSuccess()) {
             val error = try {
-                json.decodeFromString<Xrpc.XrpcError>(bodyText)
+                val errorJson = json.decodeFromString<JsonObject>(bodyText)
+                Xrpc.XrpcError(
+                    error = errorJson["error"]?.jsonPrimitive?.content ?: "UnknownError",
+                    message = errorJson["message"]?.jsonPrimitive?.content ?: bodyText
+                )
             } catch (e: Exception) {
                 Xrpc.XrpcError("UnknownError", bodyText)
             }
