@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UpdateTemplateInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UpdateTemplateOutput(
   public val unused: String? = null,

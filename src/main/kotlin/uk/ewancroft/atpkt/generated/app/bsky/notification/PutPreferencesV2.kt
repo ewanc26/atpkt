@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class PutPreferencesV2Input(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class PutPreferencesV2Output(
   public val unused: String? = null,

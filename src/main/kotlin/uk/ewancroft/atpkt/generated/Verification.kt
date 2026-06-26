@@ -5,8 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Verification(
-  public val subject: String,
-  public val handle: String,
-  public val displayName: String,
-  public val createdAt: String,
+  public val unused: String? = null,
 )

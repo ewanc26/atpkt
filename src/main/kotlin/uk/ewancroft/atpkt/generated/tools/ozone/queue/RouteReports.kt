@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class RouteReportsInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class RouteReportsOutput(
   public val unused: String? = null,

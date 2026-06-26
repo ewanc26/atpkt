@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class ReserveSigningKeyInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class ReserveSigningKeyOutput(
   public val unused: String? = null,

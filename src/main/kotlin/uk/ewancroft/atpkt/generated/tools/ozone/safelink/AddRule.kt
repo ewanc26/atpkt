@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class AddRuleInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class AddRuleOutput(
   public val unused: String? = null,

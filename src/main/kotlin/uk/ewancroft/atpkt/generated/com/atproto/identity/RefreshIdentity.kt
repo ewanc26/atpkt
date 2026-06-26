@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class RefreshIdentityInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class RefreshIdentityOutput(
   public val unused: String? = null,

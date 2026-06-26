@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Subscription(
-  public val createdAt: String,
-  public val publication: String,
+  public val unused: String? = null,
 )

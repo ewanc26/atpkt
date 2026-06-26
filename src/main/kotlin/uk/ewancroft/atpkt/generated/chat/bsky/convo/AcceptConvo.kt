@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class AcceptConvoInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class AcceptConvoOutput(
   public val unused: String? = null,

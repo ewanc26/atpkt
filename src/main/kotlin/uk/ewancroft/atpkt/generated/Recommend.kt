@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Recommend(
-  public val createdAt: String,
-  public val document: String,
+  public val unused: String? = null,
 )

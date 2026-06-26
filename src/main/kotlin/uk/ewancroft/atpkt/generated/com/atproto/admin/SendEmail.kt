@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class SendEmailInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class SendEmailOutput(
   public val unused: String? = null,

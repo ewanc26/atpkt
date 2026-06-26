@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class AddReservedHandleInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class AddReservedHandleOutput(
   public val unused: String? = null,

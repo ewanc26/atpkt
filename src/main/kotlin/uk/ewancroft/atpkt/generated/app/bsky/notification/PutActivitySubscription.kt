@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class PutActivitySubscriptionInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class PutActivitySubscriptionOutput(
   public val unused: String? = null,

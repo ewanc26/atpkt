@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class RemoveRuleInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class RemoveRuleOutput(
   public val unused: String? = null,

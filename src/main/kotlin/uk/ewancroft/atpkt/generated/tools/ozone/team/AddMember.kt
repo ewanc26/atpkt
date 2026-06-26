@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class AddMemberInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class AddMemberOutput(
   public val unused: String? = null,

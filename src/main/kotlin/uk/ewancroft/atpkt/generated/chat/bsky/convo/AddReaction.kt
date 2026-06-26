@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class AddReactionInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class AddReactionOutput(
   public val unused: String? = null,

@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class EditGroupInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class EditGroupOutput(
   public val unused: String? = null,

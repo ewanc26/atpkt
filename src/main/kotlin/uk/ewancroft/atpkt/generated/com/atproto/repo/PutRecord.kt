@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class PutRecordInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class PutRecordOutput(
   public val unused: String? = null,

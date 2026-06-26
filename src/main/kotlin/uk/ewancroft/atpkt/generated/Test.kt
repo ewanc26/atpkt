@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Test(
-  public val message: String,
+  public val unused: String? = null,
 )

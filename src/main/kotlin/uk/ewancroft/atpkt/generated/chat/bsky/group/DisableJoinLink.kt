@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class DisableJoinLinkInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class DisableJoinLinkOutput(
   public val unused: String? = null,

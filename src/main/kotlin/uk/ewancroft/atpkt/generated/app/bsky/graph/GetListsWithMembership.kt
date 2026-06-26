@@ -7,9 +7,7 @@ import kotlinx.serialization.Serializable
 public data class GetListsWithMembershipOutput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class ListWithMembership(
-  public val list: ListView? = null,
-  public val listItem: ListItemView? = null,
+  public val unused: String? = null,
 )

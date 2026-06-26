@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class UploadVideoInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class UploadVideoOutput(
   public val unused: String? = null,

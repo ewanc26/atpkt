@@ -7,14 +7,11 @@ import kotlinx.serialization.Serializable
 public data class DescribeFeedGeneratorOutput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class Feed(
-  public val uri: String? = null,
+  public val unused: String? = null,
 )
-
 @Serializable
 public data class Links(
-  public val privacyPolicy: String? = null,
-  public val termsOfService: String? = null,
+  public val unused: String? = null,
 )

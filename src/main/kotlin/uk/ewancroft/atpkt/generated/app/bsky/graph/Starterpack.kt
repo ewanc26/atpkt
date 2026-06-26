@@ -7,8 +7,7 @@ import kotlinx.serialization.Serializable
 public data class Starterpack(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class FeedItem(
-  public val uri: String? = null,
+  public val unused: String? = null,
 )

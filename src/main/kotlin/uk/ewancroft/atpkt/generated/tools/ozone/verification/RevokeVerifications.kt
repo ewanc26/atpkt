@@ -7,14 +7,11 @@ import kotlinx.serialization.Serializable
 public data class RevokeVerificationsInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class RevokeVerificationsOutput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class RevokeError(
-  public val uri: String? = null,
-  public val error: String? = null,
+  public val unused: String? = null,
 )

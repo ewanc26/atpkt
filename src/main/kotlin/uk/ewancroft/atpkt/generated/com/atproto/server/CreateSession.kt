@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 public data class CreateSessionInput(
   public val unused: String? = null,
 )
-
 @Serializable
 public data class CreateSessionOutput(
   public val unused: String? = null,
