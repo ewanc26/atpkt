@@ -1,5 +1,7 @@
 # atpkt
 
+> **Deprecated.** This project is no longer maintained. Use [atproto-kotlin](https://github.com/kikin81/atproto-kotlin) instead.
+
 A professional-grade, modular AT Protocol SDK for Kotlin.
 
 ## Overview
