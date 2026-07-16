@@ -4,7 +4,7 @@ package uk.ewancroft.atpkt.repo.storage
 
 /**
  * Interface for a content-addressed blockstore.
- * Mirroring official ATProtocol ReadableBlockstore design.
+ * Mirroring the official AT Protocol `ReadableBlockstore` design.
  *
  * Blocks are keyed by CID and retrieved/stored by that identifier.
  * This is the storage primitive underlying repository operations.

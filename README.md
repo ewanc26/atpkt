@@ -4,6 +4,8 @@
 
 A professional-grade, modular AT Protocol SDK for Kotlin.
 
+> Independent project; see the [trademark notice](TRADEMARKS.md).
+
 ## Overview
 `atpkt` provides the foundational building blocks for interacting with the Authenticated Transfer Protocol (AT Protocol). Designed with a library-first architecture, it decouples core networking, authentication, and repository management logic from specific service implementations.
 

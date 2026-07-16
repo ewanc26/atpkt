@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * In-memory implementation of a content-addressed blockstore.
- * Mirroring the design of the official ATProtocol MemoryBlockstore.
+ * Mirroring the design of the official AT Protocol `MemoryBlockstore`.
  *
  * All blocks live in a ConcurrentHashMap — no persistence.
  * Useful for testing and ephemeral repo operations.
