@@ -32,3 +32,15 @@ Guidance for `atpkt`, a deprecated experimental Kotlin/JVM AT Protocol SDK. The 
 - Because tests are absent, add focused fixtures for any repaired component: XRPC arrays/optional params and binary bodies, error envelopes, OAuth nonce/state/DPoP vectors, DID methods, Jetstream cancellation/reconnect, CAR/CID/DAG-CBOR, MST insertion/deletion, commit proofs, and SQLite restart/atomicity.
 - Compare protocol-sensitive behavior with authoritative upstream checkouts/spec fixtures and the maintained `atproto-kotlin` replacement. Compilation alone is not compatibility evidence.
 - Never use real accounts/tokens, publish artifacts, overwrite the lexicon/generated tree incidentally, or commit Gradle/Nix/build output, SQLite state, OAuth sessions, keys, CAR repositories, or logs.
+
+<!-- allowed-agents -->
+## Allowed agents
+
+Only **Claude** (Anthropic) and **Mistral** (Mistral AI) may be used as coding agents in this repository. This rule supersedes any earlier agent-attribution guidance in this file.
+
+- Agent-assisted commits must credit only one of those agents:
+  - `Co-Authored-By: Claude <noreply@anthropic.com>`
+  - `Co-Authored-By: Mistral Vibe <vibe@mistral.ai>`
+- Allowed agent footers are `🤖 Generated with [Claude Code](https://claude.com/claude-code)` and `🤖 Generated with [Mistral Vibe](https://mistral.ai)`.
+- Do not add `Co-Authored-By:` trailers, `Generated with` footers, author names, or committer identities for any other agent or AI tool.
+- Do not credit another agent in commit metadata.
